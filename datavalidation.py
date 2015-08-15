@@ -2,7 +2,8 @@ import os
 from tabulate import tabulate
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas
+import pandas as pd
+import csv
 
 def parse_data():
     '''processes the data.  Change the file location'''
@@ -19,71 +20,41 @@ def parse_data():
             line = line.split(";")
             line.append(str(i))
             line = [x.strip() for x in line]
-            if len(line) == 74:
+            if len(line) == len(header):
                 table.append(line)
             line = f.readline()
         f.close()
     return(table, header)
-    #print(tabulate(table))
 
-def get_column(column_name, table, header):
-    ''' get all vals for a specific column'''
-    index = header.index(column_name)
-    column = []
-    for row in table:
-        column.append(row[index])
-    column.remove(column_name)
-    return column
-
-def get_teams(table, header):
-    '''get all rows for a team'''
-    team_dict = {}
-    home_ind = header.index('home team')
-    away_ind = header.index('away team')
-    for row in table:
-        for ind in [home_ind, away_ind]:
-            if row[ind] not in team_dict.keys():
-                team_dict[row[ind]]= []
-            team_dict[row[ind]].append(row)
-    return team_dict
-
-def plot_score(table, header):
-    '''example of difference btwn home/away field scores.  will do 
-    actual processing later'''
-    ht_score = [float(x) for x in get_column('ht score', table, header)]
-    at_score = get_column('at score', table, header)    
-    at_score[at_score.index('24:29')] = '0'
-    at_score = [float(x) for x in at_score]
-    plt.hist( np.array(ht_score) - np.array(at_score) )
-
-def validate():
+def write_csv():
     table, header = parse_data()
-    column_data = {}
-    for i in range(len(header)):
-        column_data[header[i]] = get_column(header[i], table, header)
+    with open('/home/jamal/1ia/2001-2008data.csv', 'wb') as csvfile:
+        writer = csv.writer(csvfile, quoting = csv.QUOTE_ALL)
+        writer.writerows(table)
+
+def import_table():
+    return pd.read_csv('/home/jamal/1ia/2001-2008data.csv')
+    
+def validate():
+    table = import_table()
+    TOP = {}
+    # These are inequalities
     for team in ['ht ', 'at ']:
         for elem in [('rush attempts', 'rush TDs'), ('pass attempt', 'pass comp'), 
-                     ('pass comp', 'pass TDs'), ('fumbles', 'fumbles lost')]:
-            test1 = np.array(column_data[team + elem[0]]) >= \
-                    np.array(column_data[team + elem[1]])
-            if len(set(test1)) != 1:
-                print elem
+                     ('pass comp', 'pass TDs'), ('fumbles', 'fumbles lost'), 
+                     ('3rd down attempts', '3rd down converted'),
+                     ('4th down attempts', '4th down converted')]:
+            test = table[team + elem[0]] >= table[team + elem[1]]
+            assert(len(set(test)) == 1)
+        # These are equalities
+        for elem in [('net pass yards', 'rush yards', 'total yards'),
+                     ('fumbles lost', 'INT', 'turnovers')]:
+            test = table[team + elem[0]] + table[team + elem[1]] - \
+                table[team + elem[2]]
+        assert(len(set(test)) == 1)
+    home_TOP = np.array([int(x.split(':')[0])*60 + \
+                         int(x.split(':')[1]) for x in table['ht TOP']])
+    away_TOP = np.array([int(x.split(':')[0])*60 + \
+                         int(x.split(':')[1]) for x in table['at TOP']])
+    assert(len(set(home_TOP + away_TOP >= 3595)))
     
-    
-    
-'''
-rush attempts >= rush TDs
-pass attempt >= pass comp >= pass TDs
-pass attempt-pass comp >= INT
-net pass yards + rush yards = total yards
-fumbles <= fumbles lost
-turnovers = fumbles lost + INT
-3rd down converted < 3rd down attempts (4th)
-sum TOP < 60
-
-
-
-
-
-
-'''
