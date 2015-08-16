@@ -74,6 +74,7 @@ def get_teams():
             teams[name + " " + location] = table[table[location + ' team'] == name]
     return teams, table
 
+
 def home_away_differences():
     ''' Finds the differences between teams and their opponents based on
     location.  Returns a dictionary of numpy arrays.  Ex. use:
@@ -84,6 +85,8 @@ def home_away_differences():
     which would plot a hist of how many more points the Cowboys have vs their
     opponent when the Cowboys are playing at home.  
     a['Dallas Cowboys away score'] would be their stats when they are away
+
+    Might delete.  Too specific of a function
     '''
     all_teams, table = get_teams()
     team_keys = get_team_keys()
@@ -102,34 +105,55 @@ def home_away_differences():
     return stat_diff
 
 def get_team_keys():
+    '''gets a list of all teams'''
     table = import_table()
     teams = list(set(list(table['home team'].values) + list(table['away team'].values)))
     # filters out spurious data.  Should change in the future
     teams = [x for x in teams if len(x) > 4]
     return teams
-
-def combine_home_adv(stat):
-    '''Finds the difference between a given stat for all teams for home field
-    advantage.  Returns a numpy array.  Ex usage would be
-    
-    diff = combine_home_adv('score')
-    diff.mean() -> the average score difference'''
-    
-    stat_diffs = home_away_differences()
-    team_keys = get_team_keys()
-    diff = []
-    for team in team_keys:
-        if len(stat_diffs[team + ' home ' + stat]) != 0 and \
-           len(stat_diffs[team + ' away ' + stat]) != 0:
-                diff.append(stat_diffs[team + ' home ' + stat].mean() -\
-                            stat_diffs[team + ' away ' + stat].mean())
-    # I think I am double counting here.  Not sure, but dividing by two only 
-    # fixes the median problems
-    return np.array(diff)/2.0
         
+def cum_stat(stat):
+    '''Gives a rough idea of the dsistribution of a stat for all games at
+    a glance'''
+    table = import_table()
+    return table.describe()[stat]
+
+def cum_array(stat):
+    '''Returns a pd series of a particular stat from the table'''
+    return import_table()[stat]
     
+def team_array():
+    '''Returns a dictionary of pd dataframe objects.  Filters out the data
+    to only include a specific team. Ex usage:
     
+    df = team_array()
+    print df['Dallas Cowboys']
+    '''
+    teams, table = get_teams()
+    team_keys = get_team_keys()
+    combined = {}
+    for team in team_keys:
+        combined[team] = pd.merge(teams[team + ' home'], \
+                                  teams[team + ' away'], how = 'outer')
+    return combined
+
+
+def team_array_1(team):
+    '''exactly the same as team_array except for a specific team.  much cleaner
+    than the other function; may delete team_array.  ex:
+    team_array_1('Dallas Cowboys') == team_array()['Dallas Cowboys']
+    '''
+    table = import_table()
+    return pd.merge(filter_table(table, 'home team', team), \
+             filter_table(table, 'away team', team), how = 'outer')
+
+def filter_table(table, column, entry):
+    '''filters the table to only include certain entries'''
+    return table[table[column] == entry]
     
+def get_values(table, column):
+    '''returns all unique values for a given column'''
+    return set(table[column].values)
     
     
     
