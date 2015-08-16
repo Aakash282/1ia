@@ -33,15 +33,12 @@ class BPNN:
 
 		# activation matrix
 		self.a = [np.ones([x]) for x in self.arch]
-		print self.a
 		# weight matrix 
 		self.w = [np.ones([self.arch[i-1], self.arch[i]]) for i in range(1, len(self.arch))]
 
 		print "Initializing weights"
 		for m in self.w: 
-			print m
 			for r in range(len(m)): 
-				print m[r]
 				for c in range(len(m[r])): 
 					m[r][c] = rand(-.2, .2)
 		
@@ -70,6 +67,9 @@ class BPNN:
 
 		return self.a[len(self.a)-1]
 
+	# BACKWARDS PROPOGATION AND WEIGHT UPDATES
+	# input includes the label vector, learning rate, and momentum rate. 
+
 	def backprop(self, label, L, G):
 		if len(label) != self.arch[len(self.a)-1]:
 			print "Error: incorrect label vector size"
@@ -79,30 +79,54 @@ class BPNN:
 		idx = range(len(self.w))
 		idx.reverse()
 		D = [np.zeros([self.arch[x+1]]) for x in idx]
-		print D
-
 		
 		error = label - self.a[len(self.a)-1]
-		print "Error"
+		# print "UP"
+		# compute error propogation
 		for i in range(len(D)):
 			if i == 0:
 				# delta for output layer
 				for j in range(len(D[i])):
 					D[i][j] = dsig(self.a[len(self.a)-1][j]) * error[j]
+					# update weight vector
+					# print self.w[len(self.w)-(i+1)].shape
+					delta = np.empty_like(self.w[len(self.w)-(i+1)])
+					# print delta
+					for k in range(len(D[i])):
+						nodeDelta = D[i][k] * self.a[len(self.a)-2]
+						for d in range(len(nodeDelta)):
+							delta[d][k] = nodeDelta[d]
+					self.w[len(self.w)-(i+1)] += L * np.matrix(delta)
 			else: 
 				# delta for intermediate layers
-				# 
-				error = (self.w[len(self.w)-i].T).dot(D[i-1])
+				error = (self.w[len(self.w)-i]).dot(np.matrix(D[i-1]))
 				error = np.sum(error)
 				for j in range(len(D[i])):
-					D[i][j] = dsig(self.a[len(self.a)-(i+1)][j]) * error[j]
+					D[i][j] = dsig(self.a[len(self.a)-(i+1)][j]) * error
+					delta = np.empty_like(self.w[len(self.w)-(i+1)])
+					# update weight vector
+					for k in D[i]:
+						# print k 
+						# print self.a[len(self.a)-(i+2)]
+						nodeDelta = k * self.a[len(self.a)-(i+2)]
+						for d in range(len(nodeDelta)):
+							delta[d][k] = nodeDelta[d]
+					# print self.w[len(self.w)-(i+1)]
+					self.w[len(self.w)-(i+1)] += L * np.matrix(delta)
+
+		# print self.w
+		# print self.a
+		# print D
+
+		errorV = label - self.a[len(self.a)-1]
+		error = 0.0
+		for e in errorV: 
+			error += .5 * (e**2)
+		return error
 		
-		# for i in range()
-		return
 	def train(self, data, iterations=100, L=.5, G=.1):
 		# L is the learning rate
 		# G is the momentum factor
-		print self.a
 		for i in range(iterations):
 			error = 0.0
 			for v in data: 
@@ -110,4 +134,5 @@ class BPNN:
 				label = v[1]
 				self.predict(vector)
 				error += self.backprop(label, L, G)
+			print "Iteration: %d, Error: %f"  % (i, error)
 
