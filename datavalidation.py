@@ -13,7 +13,7 @@ def parse_data():
     table.append(header)
     
     for i in range(2001, 2009):
-        f = open("/home/jamal/1ia/data/features" + str(i))
+        f = open("/home/jamal/FSA/data/features" + str(i))
         line = f.readline()
         print i, "\n"
         while line != "":
@@ -28,12 +28,12 @@ def parse_data():
 
 def write_csv():
     table, header = parse_data()
-    with open('/home/jamal/1ia/2001-2008data.csv', 'wb') as csvfile:
+    with open('/home/jamal/FSA/dataT/2001-2008data.csv', 'wb') as csvfile:
         writer = csv.writer(csvfile, quoting = csv.QUOTE_ALL)
         writer.writerows(table)
 
 def import_table():
-    return pd.read_csv('/home/jamal/1ia/2001-2008data.csv')
+    return pd.read_csv('/home/jamal/FSA/data/2001-2008data.csv')
     
 def validate():
     table = import_table()
@@ -56,5 +56,22 @@ def validate():
                          int(x.split(':')[1]) for x in table['ht TOP']])
     away_TOP = np.array([int(x.split(':')[0])*60 + \
                          int(x.split(':')[1]) for x in table['at TOP']])
-    assert(len(set(home_TOP + away_TOP >= 3595)))
+    assert(len(set(home_TOP + away_TOP >= 3595) == 1))
+    
+def get_teams():
+    table = import_table()
+    #table.describe()
+    teams = {}
+    team_keys = list(table['home team'].values) + list(table['away team'].values)
+    for name in team_keys:        
+        teams[name] = table[table['home team'] == name]
+        teams[name].append(table[table['away team'] == name])
+    return teams
+    
+    
+    
+    
+    
+    
+    
     
