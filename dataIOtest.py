@@ -1,3 +1,4 @@
 from dataIO import loadRaw as load
 
-load.parse()
+data = load.getDataset()
+print data
