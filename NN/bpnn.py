@@ -19,7 +19,7 @@ def sigmoid(x):
 
 # derivative of sigmoid
 def dsig(y):
-	return (1.0 - y**2)
+	return (math.cosh(y) ** (-2))
 
 
 
