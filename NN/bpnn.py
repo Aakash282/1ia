@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 # seed the random num generator
-random.seed(0)
+# random.seed(0)
 
 # calculate a random number in [a, b]
 def rand(a, b):
@@ -19,7 +19,8 @@ def sigmoid(x):
 
 # derivative of sigmoid
 def dsig(y):
-	return (math.cosh(y) ** (-2))
+	# return (math.cosh(y) ** (-2))
+	return 1.0 - y**2
 
 
 
@@ -58,7 +59,7 @@ class BPNN:
 		for l in range(len(self.a)):
 			# input activation 
 			if l == 0:
-				self.a[l] = np.append(inputs, 1.0)# np.array(inputs.append(1.0))
+				self.a[l] = np.append(inputs, 1.0)
 			# hidden and output activation
 			else:
 				# matrix mult and sigmoid function
@@ -80,39 +81,48 @@ class BPNN:
 		idx.reverse()
 		D = [np.zeros([self.arch[x+1]]) for x in idx]
 		
-		error = label - self.a[len(self.a)-1]
-		# print "UP"
+		
+		# print "UP %d" % len(D)
 		# compute error propogation
 		for i in range(len(D)):
 			if i == 0:
+				error = label - self.a[len(self.a)-1]
 				# delta for output layer
 				for j in range(len(D[i])):
 					D[i][j] = dsig(self.a[len(self.a)-1][j]) * error[j]
-					# update weight vector
-					# print self.w[len(self.w)-(i+1)].shape
-					delta = np.empty_like(self.w[len(self.w)-(i+1)])
-					# print delta
-					for k in range(len(D[i])):
-						nodeDelta = D[i][k] * self.a[len(self.a)-2]
-						for d in range(len(nodeDelta)):
-							delta[d][k] = nodeDelta[d]
+				# update weight vector
+				delta = np.empty_like(self.w[len(self.w)-(i+1)])
+				# print delta
+				for k in range(len(D[i])):
+					nodeDelta = D[i][k] * self.a[len(self.a)-2]
+					# print "----------------------"
+					# print nodeDelta, len(nodeDelta), len(delta)
+					for d in range(len(nodeDelta)):
+						# print d, nodeDelta[d]
+						delta[d][k] = nodeDelta[d]
 					self.w[len(self.w)-(i+1)] += L * np.matrix(delta)
 			else: 
 				# delta for intermediate layers
-				error = (self.w[len(self.w)-i]).dot(np.matrix(D[i-1]))
+				error = (self.w[len(self.w)-i]).dot(np.matrix(D[i-1]).T)
 				error = np.sum(error)
 				for j in range(len(D[i])):
 					D[i][j] = dsig(self.a[len(self.a)-(i+1)][j]) * error
-					delta = np.empty_like(self.w[len(self.w)-(i+1)])
-					# update weight vector
-					for k in D[i]:
-						# print k 
-						# print self.a[len(self.a)-(i+2)]
-						nodeDelta = k * self.a[len(self.a)-(i+2)]
-						for d in range(len(nodeDelta)):
-							delta[d][k] = nodeDelta[d]
-					# print self.w[len(self.w)-(i+1)]
-					self.w[len(self.w)-(i+1)] += L * np.matrix(delta)
+				delta = np.empty_like(self.w[len(self.w)-(i+1)])
+				# update weight vector
+				# print len(D[i])
+				for k in range(len(D[i])):
+					# print k 
+					# print self.a[len(self.a)-(i+2)]
+					# print "----------------------"
+					# print nodeDelta, len(nodeDelta), len(delta)
+					nodeDelta = D[i][k] * self.a[len(self.a)-(i+2)]
+					for d in range(len(nodeDelta)):
+						# print nodeDelta[d]
+						# print d
+						# print k
+						delta[d][k] = nodeDelta[d]
+				# print self.w[len(self.w)-(i+1)]
+				self.w[len(self.w)-(i+1)] += L * np.matrix(delta)
 
 		# print self.w
 		# print self.a
@@ -130,6 +140,7 @@ class BPNN:
 		for i in range(iterations):
 			error = 0.0
 			for v in data: 
+				# print v
 				vector = np.array(v[0])
 				label = v[1]
 				self.predict(vector)

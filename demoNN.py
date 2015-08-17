@@ -13,7 +13,7 @@ if __name__ == "__main__":
     # create a network with two input, two hidden, and one output nodes
     n = bpnn.BPNN([2, 2, 1])
     # train it with some patterns
-    n.train(pat, L=.2)
+    n.train(pat, iterations=1000, L=.5)
     # test it
     
     for p in pat: 
