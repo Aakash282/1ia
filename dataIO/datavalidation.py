@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import csv
+import loadRaw as load
 # May want to make table a global variable?
 
 
@@ -15,7 +16,7 @@ def parse_data():
     table.append(header)
     
     for i in range(2001, 2009):
-        f = open("/home/jamal/FSA/data/features" + str(i))
+        f = open( os.getcwd()[:-10] + "data/features" + str(i))
         line = f.readline()
         print i, "\n"
         while line != "":
@@ -28,37 +29,28 @@ def parse_data():
         f.close()
     return(table, header)
 
-def write_csv():
-    table, header = parse_data()
-    with open('/home/jamal/FSA/dataT/2001-2008data.csv', 'wb') as csvfile:
-        writer = csv.writer(csvfile, quoting = csv.QUOTE_ALL)
-        writer.writerows(table)
-
-def import_table():
-    return pd.read_csv('/home/jamal/FSA/data/2001-2008data.csv')
     
 def validate():
     '''basic sanity checks on the numerical parts of the data'''
-    table = import_table()
-    TOP = {}
+    table = load.getDataset()
     # These are inequalities
-    for team in ['ht ', 'at ']:
-        for elem in [('rush attempts', 'rush TDs'), ('pass attempt', 'pass comp'), 
-                     ('pass comp', 'pass TDs'), ('fumbles', 'fumbles lost'), 
-                     ('3rd down attempts', '3rd down converted'),
-                     ('4th down attempts', '4th down converted')]:
+    for team in ['ht_', 'at_']:
+        for elem in [('rush_attempts', 'rush_TDs'), ('pass_attempt', 'pass_comp'), 
+                     ('pass_comp', 'pass_TDs'), ('fumbles', 'fumbles_lost'), 
+                     ('3rd_down_attempts', '3rd_down_converted'),
+                     ('4th_down_attempts', '4th_down_converted')]:
             test = table[team + elem[0]] >= table[team + elem[1]]
             assert(len(set(test)) == 1)
         # These are equalities
-        for elem in [('net pass yards', 'rush yards', 'total yards'),
-                     ('fumbles lost', 'INT', 'turnovers')]:
+        for elem in [('net_pass_yards', 'rush_yards', 'total_yards'),
+                     ('fumbles_lost', 'INT', 'turnovers')]:
             test = table[team + elem[0]] + table[team + elem[1]] - \
                 table[team + elem[2]]
         assert(len(set(test)) == 1)
     home_TOP = np.array([int(x.split(':')[0])*60 + \
-                         int(x.split(':')[1]) for x in table['ht TOP']])
+                         int(x.split(':')[1]) for x in table['ht_TOP']])
     away_TOP = np.array([int(x.split(':')[0])*60 + \
-                         int(x.split(':')[1]) for x in table['at TOP']])
+                         int(x.split(':')[1]) for x in table['at_TOP']])
     assert(len(set(home_TOP + away_TOP >= 3595)) == 1 )
     
 def get_teams(table):
@@ -87,8 +79,8 @@ def home_away_differences():
 
     Might delete.  Too specific of a function
     '''
-    table = import_table()
-    all_teams = get_teams()
+    table =load.getDataset()
+    all_teams = get_teams(table)
     team_keys = get_team_keys()
     columns = list(table.keys())
     # ghetto, hardcoded filtering method :(
@@ -98,7 +90,7 @@ def home_away_differences():
     stat_diff = {}
     for team in team_keys:
         for stat in columns:
-            for location in [(' home', 'ht ', 'at '), (' away', 'at ', 'ht ')]:
+            for location in [(' home', 'ht_', 'at_'), (' away', 'at_', 'ht_')]:
                 stat_diff[team + location[0] + ' ' + stat] = \
                     np.array(all_teams[team + location[0]][location[1] + stat]) - \
                     np.array(all_teams[team + location[0]][location[2] + stat])
@@ -106,21 +98,21 @@ def home_away_differences():
 
 def get_team_keys():
     '''gets a list of all teams'''
-    table = import_table()
-    teams = list(set(list(table['home team'].values) + list(table['away team'].values)))
-    # filters out spurious data.  Should change in the future
-    teams = [x for x in teams if len(x) > 4]
+    table = load.getDataset()
+    teams = list(set(list(table['home_team'].values) + list(table['away_team'].values)))
+    teams = [x.strip() for x in teams]
     return teams
         
 def cum_stat(stat):
     '''Gives a rough idea of the dsistribution of a stat for all games at
-    a glance'''
-    table = import_table()
+    a glance.  Input is a string'''
+    table = load.getDataset()
     return table.describe()[stat]
 
 def cum_array(stat):
-    '''Returns a pd series of a particular stat from the table'''
-    return import_table()[stat]
+    '''Returns a pd series of a particular stat from the table. Input is 
+    a string'''
+    return load.getDataset()[stat]
     
 def team_array():
     '''Returns a dictionary of pd dataframe objects.  Filters out the data
@@ -129,13 +121,13 @@ def team_array():
     df = team_array()
     print df['Dallas Cowboys']
     '''
-    table = import_table
-    teams = get_teams()
+    table = load.getDataset()
+    teams = get_teams(table)
     team_keys = get_team_keys()
     combined = {}
     for team in team_keys:
-        combined[team] = pd.merge(teams[team + ' home'], \
-                                  teams[team + ' away'], how = 'outer')
+        combined[team] = pd.merge(teams[team + '_home'], \
+                                  teams[team + '_away'], how = 'outer')
     return combined
 
 
@@ -144,9 +136,9 @@ def team_array_1(team):
     than the other function; may delete team_array.  ex:
     team_array_1('Dallas Cowboys') == team_array()['Dallas Cowboys']
     '''
-    table = import_table()
-    return pd.merge(filter_table(table, 'home team', team), \
-             filter_table(table, 'away team', team), how = 'outer')
+    table = load.getDataset()
+    return pd.merge(filter_table(table, 'home_team', team), \
+             filter_table(table, 'away_team', team), how = 'outer')
 
 def filter_table(table, column, entry):
     '''filters the table to only include certain entries'''
