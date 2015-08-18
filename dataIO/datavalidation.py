@@ -57,7 +57,6 @@ def get_teams(table):
     '''returns a dictionary of teams separated by their location.  Ex:
     get_teams()['Dallas Cowboys home'] would return the cowboys' home game
     information'''
-    #table.describe() useful to use later
     teams = {}
     team_keys = list(table['home_team'].values) + list(table['away_team'].values)
     for name in team_keys:        
