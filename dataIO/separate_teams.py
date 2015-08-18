@@ -29,6 +29,7 @@ def write_teams():
         away_team['home_field?'] = no_ser 
         table_out = pd.merge(home_team, away_team, how = 'outer')
         dirpath =  os.getcwd()[:-10] + '/data/teamdata/'
+        print dirpath
         table_out.to_csv(dirpath + team + '.csv')
         
 def format_home(home_team):
