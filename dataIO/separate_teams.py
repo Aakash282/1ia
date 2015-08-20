@@ -49,8 +49,12 @@ def write_teams():
         table_out = pd.merge(home_team, away_team, how = 'outer')
         dirpath =  os.getcwd()[:-10] + '/data/teamdata/'
         print dirpath
+<<<<<<< HEAD
         table_out.to_csv(dirpath + team + '.csv')        
         
+=======
+        table_out.to_csv(dirpath + team + '.csv')
+>>>>>>> a0c95d980d02515f52ac4403354db94f4550c171
         
 def format_home(home_team):
     keys = home_team.keys()
