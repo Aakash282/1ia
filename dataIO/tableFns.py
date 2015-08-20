@@ -57,6 +57,8 @@ def team_array_1(team):
     than the other function; may delete team_array.  ex:
     team_array_1('Dallas Cowboys') == team_array()['Dallas Cowboys']
     '''
+    # There is a weird spacing issue?
+    team += " "
     table = load.getDataset()
     return pd.merge(filter_table(table, 'home_team', team), \
              filter_table(table, 'away_team', team), how = 'outer')
@@ -68,3 +70,12 @@ def filter_table(table, column, entry):
 def get_values(table, column):
     '''returns all unique values for a given column'''
     return set(table[column].values)
+
+def get_previous_stats(table, team, index):
+    '''Should probably get this from the week rather than the index'''
+    table = pd.DataFrame.from_csv(os.getcwd()[:-10] + \
+                                  'data/teamdata/Dallas Cowboys.csv')
+    if index == 0:
+        print 'there is no previous stat!'
+    return table[index : index - 1]
+    
