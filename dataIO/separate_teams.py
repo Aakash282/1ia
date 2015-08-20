@@ -15,7 +15,7 @@ def separate_teams(table):
 def write_teams_year():
     for i in range(2001, 2015):
         print i
-        table = pd.DataFrame.from_csv(os.getcwd()[:-10]  + "/data/NFL0114_TeamStats_raw%d.csv" %i)
+        table = pd.DataFrame.from_csv(os.getcwd()[:-10]  + "/data/NFLstatsbyyear/NFL0114_TeamStats_raw%d.csv" %i)
         teams_table = separate_teams(table)
         team_keys = teams_table.keys()
         team_keys = list(set([x[:-5] for x in team_keys]))
@@ -30,6 +30,7 @@ def write_teams_year():
             away_team['home_field?'] = no_ser 
             table_out = pd.merge(home_team, away_team, how = 'outer')
             dirpath =  os.getcwd()[:-10] + '/data/teamdata%d/' %i
+            table_out = table_out.sort('week year')
             table_out.to_csv(dirpath + team + '.csv')
             
 def write_teams():
@@ -48,14 +49,8 @@ def write_teams():
         away_team['home_field?'] = no_ser 
         table_out = pd.merge(home_team, away_team, how = 'outer')
         dirpath =  os.getcwd()[:-10] + '/data/teamdata/'
-        print dirpath
-<<<<<<< HEAD
         table_out.to_csv(dirpath + team + '.csv')        
-        
-=======
-        table_out.to_csv(dirpath + team + '.csv')
->>>>>>> a0c95d980d02515f52ac4403354db94f4550c171
-        
+
 def format_home(home_team):
     keys = home_team.keys()
     keys_1 = [x[3:] for x in keys if 'ht' == x[0:2]]
