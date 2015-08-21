@@ -73,8 +73,6 @@ def get_values(table, column):
 
 def get_previous_stats(table, week, n):
     ''' Returns the previous n weeks for a given table.  Returns a table'''
-    table = pd.DataFrame.from_csv(os.getcwd()[:-10] + \
-                                  'data/teamdatabyyear/teamdata2001/Dallas Cowboys.csv')
     table = table.sort('week year')
     table_lst = [int(x) for x in list(table['week year'])]
     index = 0
