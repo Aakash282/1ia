@@ -3,7 +3,7 @@ import pandas as pd
 import os 
 import tableFns as TFns
 import loadRaw as load
-import csv
+import csv	
 
 # data is missing week and/or year columns, which are needed to perform a data
 # analysis
@@ -15,7 +15,7 @@ def separate_teams(table):
 def write_teams_year():
     for i in range(2001, 2015):
         print i
-        table = pd.DataFrame.from_csv(os.getcwd()[:-10]  + "/data/NFLstatsbyyear/NFL0114_TeamStats_raw%d.csv" %i)
+        table = load.getYearData(i)
         teams_table = separate_teams(table)
         team_keys = teams_table.keys()
         team_keys = list(set([x[:-5] for x in team_keys]))

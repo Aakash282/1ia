@@ -42,3 +42,11 @@ def getDataset():
     FSA = cwd.strip("1ia/dataIO")
     datadir = '/' + FSA + "/data/"
     return pd.DataFrame.from_csv(datadir + "NFL0114_TeamStats_raw.csv")
+
+def getTeamData(year, team):
+    path = os.getcwd()[:-10] + 'data/teamdatabyyear/teamdata%d/%s.csv' %(year,team)
+    return pd.DataFrame.from_csv(path)
+
+def getYearData(year):
+    path = os.getcwd()[:-10] + 'data/NFLstatsbyyear/NFL0114_TeamStats_raw%d.csv' %year
+    return pd.DataFrame.from_csv(path)

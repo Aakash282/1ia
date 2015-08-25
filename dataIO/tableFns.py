@@ -1,5 +1,4 @@
 import os
-from tabulate import tabulate
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -83,4 +82,6 @@ def get_previous_stats(table, week, n):
     if index < n:
         return table[0:index]
     return table[index  - n: index]
+
+
     

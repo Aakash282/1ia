@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from dataIO import tableFns as TFns
+from dataIO import loadRaw as load
 
 class game:
     '''The idea behind this class is to be able to make a prediction for a 
@@ -20,13 +21,9 @@ class game:
             print 'improper time field format!'
     
     def get_stats(self, n):
-        home_path = os.getcwd()[:-3] + 'data/teamdatabyyear/teamdata%d/%s.csv' \
-            %(self.year, self.home) 
-        home_table = pd.DataFrame.from_csv(home_path)
+        home_table = load.getTeamData(self.year, self.home)
+        away_table = load.getTeamData(self.year, self.away)
         home_stats = TFns.get_previous_stats(home_table, self.week, n)
-        away_path = os.getcwd()[:-3] + 'data/teamdatabyyear/teamdata%d/%s.csv' \
-            %(self.year, self.away) 
-        away_table = pd.DataFrame.from_csv(away_path)        
         away_stats = TFns.get_previous_stats(away_table, self.week, n)
         return {'home stats': home_stats, 'away stats': away_stats}
 
@@ -34,28 +31,19 @@ class game:
         stats = get_stats(self, n)
         home_stats = stats['home stats']
         away_stats = stats['away stats']
+        features_home = compute_features({}, home_stats)
+        features_away = compute_features({}, away_stats)
         #compute features here.  This is currently just an example
         #would probably want a dictionary of different features
         
-def rush_feature(team):
-    i = 2001
-    path = os.getcwd()[:-3] + 'data/NFLstatsbyyear/NFL0114_TeamStats_raw%d.csv' %i
-    table = pd.DataFrame.from_csv(path)
-    team_path = os.getcwd()[:-3] + 'data/teamdatabyyear/teamdata%d/%s.csv' %(i,team) 
-    team_table = pd.DataFrame.from_csv(team_path)
-    total_rush = np.append(np.array(table['ht_rush_yards']), \
-                           np.array(table['at_rush_yards']))
-    team_rush = np.array(team_table['rush_yards'])
-    return (team_rush - total_rush.mean()) / total_rush.std()     
-
-def total_yds_feature(team):
-    i = 2001
-    path = os.getcwd()[:-3] + 'data/NFLstatsbyyear/NFL0114_TeamStats_raw%d.csv' %i
-    table = pd.DataFrame.from_csv(path)
-    team_path = os.getcwd()[:-3] + 'data/teamdatabyyear/teamdata%d/%s.csv' %(i,team) 
-    team_table = pd.DataFrame.from_csv(team_path)
-    total = np.append(np.array(table['ht_total_yards']), \
-                           np.array(table['at_total_yards']))
-    team_total = np.array(team_table['total_yards'])
-    return (team_total - total.mean()) / total.std()
+        
+    def compute_features(self, feature_dict, stats):
+        '''to be finished later'''
+        feature_dict['rush'] = rush_feature(self, stats)
+        return feature_dict
+    
+    def rush_feature(self, stats):
+        league_data = load.getYearData(self.year)
+        league_rush = np.append(league_data['ht_rush_yards'] + league_data['at_rush_yards'])
+        return (stats['rush_yards'].values - league_rush.mean())/league_rush.std()
     
