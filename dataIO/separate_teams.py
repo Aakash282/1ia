@@ -5,9 +5,6 @@ import tableFns as TFns
 import loadRaw as load
 import csv	
 
-# data is missing week and/or year columns, which are needed to perform a data
-# analysis
-
 def separate_teams(table):
     team_dict = TFns.get_teams(table)
     return team_dict
@@ -29,7 +26,7 @@ def write_teams_year():
             away_team = format_away(away_team)
             away_team['home_field?'] = no_ser 
             table_out = pd.merge(home_team, away_team, how = 'outer')
-            dirpath =  os.getcwd()[:-10] + '/data/teamdata%d/' %i
+            dirpath =  os.getcwd()[:-10] + '/data/teamdatabyyear/teamdata%d/' %i
             table_out = table_out.sort('week year')
             table_out.to_csv(dirpath + team + '.csv')
             
@@ -57,7 +54,7 @@ def format_home(home_team):
     keys_2 = ['opp_' + x[3:] for x in keys if 'at' == x[0:2]]
     keys_3 = ['opp_' + x[5:] for x in keys if 'away' == x[0:4]]
     keys_4 = [x[5:] for x in keys if 'home' == x[0:4]]
-    out = [keys[0]] + keys_4 + keys_3 + list(keys[2:22]) + keys_1 + keys_2
+    out = [keys[0]] + keys_4 + keys_3 + list(keys[3:23]) + keys_1 + keys_2
     out.remove('wins_toss')
     out.remove('opp_endance')
     home_team.columns = out
@@ -69,7 +66,7 @@ def format_away(away_team):
     keys_2 = [x[3:] for x in keys if 'at' == x[0:2]]
     keys_3 = [x[5:] for x in keys if 'away' == x[0:4]]
     keys_4 = ['opp_' + x[5:] for x in keys if 'home' == x[0:4]]
-    out = [keys[0]] + keys_4 + keys_3 + list(keys[2:22]) + keys_1 + keys_2
+    out = [keys[0]] + keys_4 + keys_3 + list(keys[3:23]) + keys_1 + keys_2
     out.remove('opp_wins_toss')
     out.remove('endance')
     away_team.columns = out
