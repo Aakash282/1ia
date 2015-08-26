@@ -1,3 +1,6 @@
+from collections import deque,Counter
+from bisect import insort, bisect_left
+from itertools import islice
 def RunningMedian(seq, M):
     """
      Purpose: Find the median for the points in a sliding window (odd number in size) 
