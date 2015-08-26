@@ -4,16 +4,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from dataIO import tableFns as TFns
-from dataIO import loadRaw as load
+from dataIO import loadData as load
 
 class game:
     '''The idea behind this class is to be able to make a prediction for a 
     possible game that may occur in the future'''
-    def __init__(self, home_team, away_team, week_year, field):
-        
+    def __init__(self, home_team, away_team, week_year):
         self.home = home_team
         self.away = away_team
-        self.field = field
         if len(week_year) > 2:
             self.week = int(week_year.split(' ')[0])
             self.year = int(week_year.split(' ')[1])

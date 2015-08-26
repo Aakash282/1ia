@@ -4,10 +4,14 @@ import numpy as np
 import pandas as pd 
 import os 
 
+def getPath():
+    ospath = os.getcwd().split('/')
+    ospath = '/' + ospath[1] + '/' + ospath[2] + '/' + ospath[3]
+    return ospath
+
 def parse():
-    cwd = os.getcwd()
-    FSA = cwd.strip("1ia/dataIO")
-    datadir = '/' + FSA + "/data/"
+    ospath = getPath()
+    datadir = ospath + '/data/'
 
     p = pd.read_csv(datadir + "headers.csv", sep = ";")
     for y in range(2001, 2015):
@@ -23,9 +27,8 @@ def parse():
     p.to_csv(datadir + "NFL0114_TeamStats_raw.csv")
 
 def parseYear():
-    cwd = os.getcwd()
-    FSA = cwd.strip("1ia/dataIO")
-    datadir = '/' + FSA + "/data/"
+    ospath = getPath()
+    datadir = ospath + '/data/'
 
     for y in range(2001, 2015):
         print y
@@ -38,15 +41,15 @@ def parseYear():
         p.to_csv(datadir + "NFL0114_TeamStats_raw%d.csv" %y)
         
 def getDataset():
-    cwd = os.getcwd()
-    FSA = cwd.strip("1ia/dataIO")
-    datadir = '/' + FSA + "/data/"
-    return pd.DataFrame.from_csv(datadir + "NFL0114_TeamStats_raw.csv")
+    ospath = getPath()
+    return pd.DataFrame.from_csv(ospath + "/data/NFL0114_TeamStats_raw.csv")
 
 def getTeamData(year, team):
-    path = os.getcwd()[:-10] + 'data/teamdatabyyear/teamdata%d/%s.csv' %(year,team)
+    ospath = getPath()
+    path = ospath + '/data/teamdatabyyear/teamdata%d/%s.csv' %(year,team)
     return pd.DataFrame.from_csv(path)
 
 def getYearData(year):
-    path = os.getcwd()[:-10] + 'data/NFLstatsbyyear/NFL0114_TeamStats_raw%d.csv' %year
+    ospath = getPath()
+    path = ospath + '/data/NFLstatsbyyear/NFL0114_TeamStats_raw%d.csv' %year
     return pd.DataFrame.from_csv(path)
