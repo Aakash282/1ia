@@ -6,6 +6,7 @@ import pandas as pd
 from dataIO import tableFns as TFns
 from dataIO import loadData as load
 from movingMedian import RunningMedian
+from dataIO import loadRaw as ld
 
 def movingaverage(interval, window_size):
     window = np.ones(int(window_size))/float(window_size)
@@ -49,10 +50,12 @@ class game:
         features['first_downs'] = self.get_feature('first_downs', home, n)
         features['conv 3d'] = self.get_feature('3rd_down_converted', home, n)
         features['score'] = self.score(home)
+        features['turnovers forced'] = self.get_feature('opp_turnovers', home, n)
+        features['sacks'] = self.get_feature('sacks', home, n)
         return features
     
     def get_feature(self, feature, home, n):
-        '''compute the normalized moving-average of rush yards for given team'''
+        '''compute the normalized moving-average of a feature for given team'''
         avg = []
         weeks = pd.concat(self.season).groupby('week year')
         for idx, w in weeks:
@@ -86,3 +89,26 @@ class game:
                 for idx, w in team.iterrows():
                     if np.mean(w['week year']) == self.week:
                         return w['score']
+
+def training_set():
+    for i in range(2001, 20012):
+        df = pd.DataFrame()
+        league_data = load.getYearData(i)
+        for idx, row in league_data.iterrows():
+            temp_game = game(row['home_team'], row['away_team'], str(row['week year']) + ' ' + str(i))
+            temp_features = temp_game.get_features(4)
+            if None in temp_features['away'].values() or \
+               None in temp_features['home'].values():
+                continue
+            away = pd.DataFrame.from_dict(data = temp_features['away'], orient = 'index')
+            home = pd.DataFrame.from_dict(data = temp_features['home'], orient = 'index')
+            score_diff = {'score diff': temp_features['home']['score'] - temp_features['away']['score']}
+            score_diff = pd.DataFrame.from_dict(data = score_diff, orient = 'index')
+            output = pd.DataFrame.append(away, home, ignore_index = True)
+            output = pd.DataFrame.append(output, score_diff, ignore_index = True).transpose()
+            columns = ['away ' + x for x in temp_features['away']] + \
+                ['home ' + x for x in temp_features['away']] + ['score diff']
+            output.columns = columns
+            df = pd.DataFrame.append(df, output)
+        df.to_csv(ld.getPath() + '/data/NNinput/training.csv', index = False)
+        
