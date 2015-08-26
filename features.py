@@ -51,7 +51,7 @@ class game:
         features['conv 3d'] = self.get_feature('3rd_down_converted', home, n)
         features['score'] = self.score(home)
         features['turnovers forced'] = self.get_feature('opp_turnovers', home, n)
-        features['sacks'] = self.get_feature('sacks', home, n)
+        features['sacks forced'] = self.get_feature('opp_sacks', home, n)
         return features
     
     def get_feature(self, feature, home, n):
