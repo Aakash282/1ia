@@ -58,6 +58,7 @@ class game:
         features['penalty yards'] = self.get_feature('penalty_yards', home, n)
         features['num plays'] = self.get_feature('total_plays', home, n)
         features['allowed yards'] = self.get_feature('opp_total_yards', home, n)
+        features['spread'] = self.spread(home)
         return features
     
     def get_feature(self, feature, home, n):
@@ -95,6 +96,26 @@ class game:
                 for idx, w in team.iterrows():
                     if np.mean(w['week year']) == self.week:
                         return w['score']
+
+    def spread(self, home):
+        if home:
+            givenTeam = self.home
+        else:
+            givenTeam = self.away
+        for team in self.season:
+            if list(set(team['team']))[0].strip() == givenTeam:
+                for idx, w in team.iterrows():
+                    if np.mean(w['week year']) == self.week:
+                        spread = w['spread']
+                        if spread == 'Pick':
+                            return "0"
+                        else:
+                            favorite,points = spread.split("-")
+                            favorite = favorite.strip(" ")
+                            if (favorite == givenTeam) == home:
+                                return points
+                            else:
+                                return "-" + points
 
 def feature_set(start, stop):
     for i in range(start, stop+1):

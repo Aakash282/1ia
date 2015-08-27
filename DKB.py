@@ -3,7 +3,7 @@ import numpy as np
  
 training = ['trainRF.csv', 'trainDL.csv', 'trainLM.csv', 'trainDT.csv']
 testing = ['testRF.csv', 'testDL.csv', 'testLM.csv', 'testDT.csv']
-datadir = '/home/indurkhya/FSA/data/'
+datadir = os.path.expanduser('~') + 'FSA/data/'
 models = 4
 trainL = 0
 testL = 0

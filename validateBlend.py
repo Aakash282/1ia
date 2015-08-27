@@ -84,8 +84,10 @@ def confusionMatrix(l1, l2):
                     conf[0] += 1
     return conf
 
+
+
 if __name__ == "__main__":
-    datadir = '/home/indurkhya/FSA/data/NNinput/'
+    datadir = os.path.expanduser('~') + '/FSA/data/NNinput/'
     df_train = pd.DataFrame.from_csv(datadir + "training_set.csv")
     df_test = pd.DataFrame.from_csv(datadir + "testing_set.csv")
     holdout = []

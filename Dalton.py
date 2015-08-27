@@ -2,9 +2,9 @@ import os
 import h2o
 import pandas as pd
 h2o.init()
-
+datadir = os.path.expanduser('~') +'/FSA/data/'
 # Load in the data
-dir_prefix = os.path.expanduser('~') + "/FSA/data/NNinput/"
+dir_prefix = datadir + "NNinput/"
 trainingFile = dir_prefix + 'training_set.csv'
 trainData = h2o.import_frame(path=trainingFile)
 testFile = dir_prefix + 'testing_set.csv'
@@ -25,9 +25,9 @@ drf.show()
 
 
 drf_preds = drf.predict(test).as_data_frame(use_pandas=True)
-drf_preds.to_csv('/home/indurkhya/FSA/data/' + "testRF.csv", index=False)
+drf_preds.to_csv(datadir + "testRF.csv", index=False)
 drf_preds = drf.predict(train).as_data_frame(use_pandas=True)
-drf_preds.to_csv('/home/indurkhya/FSA/data/' + "trainRF.csv", index=False)
+drf_preds.to_csv(datadir + "trainRF.csv", index=False)
 
 
 dl = h2o.deeplearning(x = train.drop('score diff'),
@@ -39,9 +39,9 @@ dl = h2o.deeplearning(x = train.drop('score diff'),
 dl.show()
 
 dl_preds = dl.predict(test).as_data_frame(use_pandas=True)
-dl_preds.to_csv('/home/indurkhya/FSA/data/' + "testDL.csv", index=False)
+dl_preds.to_csv(datadir + "testDL.csv", index=False)
 dl_preds = dl.predict(train).as_data_frame(use_pandas=True)
-dl_preds.to_csv('/home/indurkhya/FSA/data/' + "trainDL.csv", index=False)
+dl_preds.to_csv(datadir + "trainDL.csv", index=False)
 
 glm = h2o.glm(x = train.drop('score diff'),
 			  y = train['score diff'],
@@ -50,9 +50,9 @@ glm = h2o.glm(x = train.drop('score diff'),
 glm.show()
 
 glm_preds = glm.predict(test).as_data_frame(use_pandas=True)
-glm_preds.to_csv('/home/indurkhya/FSA/data/' + "testLM.csv", index=False)
+glm_preds.to_csv(datadir + "testLM.csv", index=False)
 glm_preds = glm.predict(train).as_data_frame(use_pandas=True)
-glm_preds.to_csv('/home/indurkhya/FSA/data/' + "trainLM.csv", index=False)
+glm_preds.to_csv(datadir + "trainLM.csv", index=False)
 
 gm = h2o.gbm(x = train.drop('score diff'),
 			  y = train['score diff'],
@@ -61,6 +61,6 @@ gm = h2o.gbm(x = train.drop('score diff'),
 gm.show()
 
 gm_preds = glm.predict(test).as_data_frame(use_pandas=True)
-gm_preds.to_csv('/home/indurkhya/FSA/data/' + "testDT.csv", index=False)
+gm_preds.to_csv(datadir + "testDT.csv", index=False)
 gm_preds = glm.predict(train).as_data_frame(use_pandas=True)
-gm_preds.to_csv('/home/indurkhya/FSA/data/' + "trainDT.csv", index=False)
+gm_preds.to_csv(datadir + "trainDT.csv", index=False)
