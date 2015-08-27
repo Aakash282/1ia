@@ -131,7 +131,7 @@ if __name__ == "__main__":
     print "actual\t\taway\thome"
     print "predicted away\t%d\t%d" % (conf[0], conf[1])
     print "predicted home\t%d\t%d" % (conf[2], conf[3])
-    
+
     plt.title("Blended Regression Predictions")
     plt.xlabel("Prediction")
     plt.ylabel("Prediction Frequency")
