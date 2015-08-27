@@ -59,7 +59,7 @@ class game:
         features['num plays'] = self.get_feature('total_plays', home, n)
         features['allowed yards'] = self.get_feature('opp_total_yards', home, n)
         features['spread'] = self.spread(home)
-        features['TOP'] = self.timeOfPossesion(home)
+        features['TOP'] = self.timeOfPossession(home)
         return features
     
     def get_feature(self, feature, home, n):
@@ -118,7 +118,7 @@ class game:
                             else:
                                 return (float(points) * -1.0)
 
-    def timeOfPossesion(self, home):
+    def timeOfPossession(self, home):
         if home:
             givenTeam = self.home
         else:
