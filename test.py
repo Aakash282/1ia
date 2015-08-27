@@ -2,7 +2,7 @@ import features
 from dataIO import loadData as ld 
 from matplotlib import pyplot as plt
 
-features.feature_set()
+features.feature_set(2012,2013)
 # years = range(2001, 2002)
 # for y in years: 
 # 	season = ld.loadYear(y)

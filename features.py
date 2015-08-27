@@ -59,6 +59,7 @@ class game:
         features['num plays'] = self.get_feature('total_plays', home, n)
         features['allowed yards'] = self.get_feature('opp_total_yards', home, n)
         features['spread'] = self.spread(home)
+        features['TOP'] = self.timeOfPossesion(home)
         return features
     
     def get_feature(self, feature, home, n):
@@ -108,14 +109,31 @@ class game:
                     if np.mean(w['week year']) == self.week:
                         spread = w['spread']
                         if spread == 'Pick':
-                            return "0"
+                            return 0.0
                         else:
                             favorite,points = spread.split("-")
                             favorite = favorite.strip(" ")
                             if (favorite == givenTeam) == home:
-                                return points
+                                return float(points)
                             else:
-                                return "-" + points
+                                return (float(points) * -1.0)
+
+    def timeOfPossesion(self, home):
+        if home:
+            givenTeam = self.home
+        else:
+            givenTeam = self.away
+        for team in self.season:
+            if list(set(team['team']))[0].strip() == givenTeam:
+                for idx, w in team.iterrows():
+                    if np.mean(w['week year']) == self.week:
+                        top = w['TOP']
+                        minutes, seconds = top.split(':')
+                        top = float(minutes) + float(seconds) / 60.0
+                        oppTop = w['opp_TOP']
+                        minutes, seconds = oppTop.split(':')
+                        oppTop = float(minutes) + float(seconds) / 60.0
+                        return top / (top + oppTop)
 
 def feature_set(start, stop):
     for i in range(start, stop+1):
