@@ -46,12 +46,18 @@ class game:
         function simply makes calls to other feature computing functions'''
         features = {}
         features['rush'] = self.get_feature('rush_yards', home, n)
+        features['rush att'] = self.get_feature('rush_attempts', home, n)
         features['pass'] = self.get_feature('pass_yards', home, n)
+        features['pass att'] = self.get_feature('pass_attempt', home, n)
+        features['INT'] = self.get_feature('INT', home, n)
         features['first_downs'] = self.get_feature('first_downs', home, n)
         features['conv 3d'] = self.get_feature('3rd_down_converted', home, n)
         features['score'] = self.score(home)
         features['turnovers forced'] = self.get_feature('opp_turnovers', home, n)
         features['sacks forced'] = self.get_feature('opp_sacks', home, n)
+        features['penalty yards'] = self.get_feature('penalty_yards', home, n)
+        features['num plays'] = self.get_feature('total_plays', home, n)
+        features['allowed yards'] = self.get_feature('opp_total_yards', home, n)
         return features
     
     def get_feature(self, feature, home, n):
@@ -90,8 +96,8 @@ class game:
                     if np.mean(w['week year']) == self.week:
                         return w['score']
 
-def training_set():
-    for i in range(2001, 20012):
+def feature_set(start, stop):
+    for i in range(start, stop+1):
         df = pd.DataFrame()
         league_data = load.getYearData(i)
         for idx, row in league_data.iterrows():
@@ -110,5 +116,6 @@ def training_set():
                 ['home ' + x for x in temp_features['away']] + ['score diff']
             output.columns = columns
             df = pd.DataFrame.append(df, output)
-        df.to_csv(ld.getPath() + '/data/NNinput/training.csv', index = False)
+            print output.values
+        df.to_csv(ld.getPath() + '/data/NNinput/features%d.csv' % i, index = False)
         

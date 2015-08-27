@@ -1,0 +1,66 @@
+import os
+import h2o
+import pandas as pd
+h2o.init()
+
+# Load in the data
+dir_prefix = os.path.expanduser('~') + "/FSA/data/NNinput/"
+trainingFile = dir_prefix + 'training_set.csv'
+trainData = h2o.import_frame(path=trainingFile)
+testFile = dir_prefix + 'testing_set.csv'
+testData = h2o.import_frame(path=testFile)
+
+
+
+train = trainData.drop('away score').drop('home score')
+test = testData.drop('away score').drop('home score')
+
+drf = h2o.random_forest(x = train.drop('score diff'),
+						y = train['score diff'],
+						validation_x = train.drop('score diff'),
+						validation_y = train['score diff'],
+						ntrees=500, 
+						max_depth=50)
+drf.show()
+
+
+drf_preds = drf.predict(test).as_data_frame(use_pandas=True)
+drf_preds.to_csv('/home/indurkhya/FSA/data/' + "testRF.csv", index=False)
+drf_preds = drf.predict(train).as_data_frame(use_pandas=True)
+drf_preds.to_csv('/home/indurkhya/FSA/data/' + "trainRF.csv", index=False)
+
+
+dl = h2o.deeplearning(x = train.drop('score diff'),
+					  y = train['score diff'],
+					  validation_x = train.drop('score diff'),
+					  validation_y = train['score diff'],
+					  nfolds=2,
+					  epochs=500)
+dl.show()
+
+dl_preds = dl.predict(test).as_data_frame(use_pandas=True)
+dl_preds.to_csv('/home/indurkhya/FSA/data/' + "testDL.csv", index=False)
+dl_preds = dl.predict(train).as_data_frame(use_pandas=True)
+dl_preds.to_csv('/home/indurkhya/FSA/data/' + "trainDL.csv", index=False)
+
+glm = h2o.glm(x = train.drop('score diff'),
+			  y = train['score diff'],
+			  validation_x = train.drop('score diff'),
+			  validation_y = train['score diff'])
+glm.show()
+
+glm_preds = glm.predict(test).as_data_frame(use_pandas=True)
+glm_preds.to_csv('/home/indurkhya/FSA/data/' + "testLM.csv", index=False)
+glm_preds = glm.predict(train).as_data_frame(use_pandas=True)
+glm_preds.to_csv('/home/indurkhya/FSA/data/' + "trainLM.csv", index=False)
+
+gm = h2o.gbm(x = train.drop('score diff'),
+			  y = train['score diff'],
+			  validation_x = train.drop('score diff'),
+			  validation_y = train['score diff'])
+gm.show()
+
+gm_preds = glm.predict(test).as_data_frame(use_pandas=True)
+gm_preds.to_csv('/home/indurkhya/FSA/data/' + "testDT.csv", index=False)
+gm_preds = glm.predict(train).as_data_frame(use_pandas=True)
+gm_preds.to_csv('/home/indurkhya/FSA/data/' + "trainDT.csv", index=False)
