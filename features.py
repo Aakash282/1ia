@@ -54,12 +54,13 @@ class game:
         features['first_downs'] = self.get_feature('first_downs', home, n)
         features['conv 3d'] = self.get_feature('3rd_down_converted', home, n)
         features['score'] = self.score(home)
+        features['points'] = self.get_feature('score', home, n)
         features['turnovers forced'] = self.get_feature('opp_turnovers', home, n)
         features['sacks forced'] = self.get_feature('opp_sacks', home, n)
         features['penalty yards'] = self.get_feature('penalty_yards', home, n)
         features['num plays'] = self.get_feature('total_plays', home, n)
         features['allowed yards'] = self.get_feature('opp_total_yards', home, n)
-        features['TOP'] = self.timeOfPossession(home)
+        features['TOP'] = self.get_feature('TOP', home, n)
         return features
 
     def compute_game_features(self, n):
@@ -69,10 +70,7 @@ class game:
     
     def get_feature(self, feature, home, n):
         '''compute the normalized moving-average of a feature for given team'''
-        avg = []
         weeks = pd.concat(self.season).groupby('week year')
-        for idx, w in weeks:
-            avg.append(np.mean(w[feature].values))
         
         if home: 
             givenTeam = self.home
@@ -84,7 +82,10 @@ class game:
                 prev = []
                 for idx, w in team.iterrows():
                     if np.mean(w['week year']) < self.week:
-                        prev.append(w[feature])
+                        if feature == 'TOP':
+                            prev.append(self.timeOfPossession(home))
+                        else:
+                            prev.append(w[feature])
                 if len(prev) > n:
                     return np.mean(prev[-n:])
                 else: 
@@ -145,7 +146,9 @@ def feature_set(start, stop):
         league_data = load.getYearData(i)
         for idx, row in league_data.iterrows():
             temp_game = game(row['home_team'], row['away_team'], str(row['week year']) + ' ' + str(i))
-            temp_features = temp_game.get_features(4)
+            # Adjust this to change the length of the moving average #FuckMagicNumbers #GlenGeorgeRuinedMe
+            movingAvgLength = 4
+            temp_features = temp_game.get_features(movingAvgLength)
             if None in temp_features['away'].values() or \
                None in temp_features['home'].values():
                 continue
