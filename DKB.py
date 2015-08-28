@@ -1,9 +1,9 @@
 import numpy as np
-
+import os
  
 training = ['trainRF.csv', 'trainDL.csv', 'trainLM.csv', 'trainDT.csv']
 testing = ['testRF.csv', 'testDL.csv', 'testLM.csv', 'testDT.csv']
-datadir = os.path.expanduser('~') + 'FSA/data/'
+datadir = os.path.expanduser('~') + '/FSA/data/'
 models = 4
 trainL = 0
 testL = 0

@@ -6,26 +6,27 @@ from sklearn import metrics
 import numpy as np
 from matplotlib import pyplot as plt
 from NN import bpnn
+import os
 
 middle = 0
 
-def compare(l1, l2):
-    if len(l1) != len(l2):
+def compare(l1, l2, l3):
+    if len(l1) != len(l2) and len(l2) != len(l3):
         print 'prediction list wrong size'
         exit()
     else: 
         err_count = 0
         for i in range(len(l1)):
-            if l1[i] < middle: answer = -1
+            if l1[i] < l3[i]: answer = -1
             else: answer = 1
-            if l2[i] < middle: actual = -1
+            if l2[i] < l3[i]: actual = -1
             else: actual = 1
             if answer != actual:
                 err_count += 1
 
         return float(err_count) / len(l1)
 
-def falseNegative(l1, l2):
+def falseNegative(l1, l2, l3):
     if len(l1) != len(l2):
         print 'prediction list wrong size'
         exit()
@@ -33,17 +34,17 @@ def falseNegative(l1, l2):
         err_count = 0
         total = 0
         for i in range(len(l1)):
-            if l2[i] > middle: 
+            if l2[i] > l3[i]: 
                 total += 1 
-                if l1[i] < middle: answer = -1
+                if l1[i] < l3[i]: answer = -1
                 else: answer = 1
-                if l2[i] < middle: actual = -1
+                if l2[i] < l3[i]: actual = -1
                 else: actual = 1
                 if answer != actual:
                     err_count += 1
         return float(err_count) / total
 
-def falsePositive(l1, l2):
+def falsePositive(l1, l2, l3):
     if len(l1) != len(l2):
         print 'prediction list wrong size'
         exit()
@@ -51,26 +52,26 @@ def falsePositive(l1, l2):
         err_count = 0
         total = 0
         for i in range(len(l1)):
-            if l2[i] < middle: 
+            if l2[i] < l3[i]: 
                 total += 1
-                if l1[i] < middle: answer = -1
+                if l1[i] < l3[i]: answer = -1
                 else: answer = 1
-                if l2[i] < middle: actual = -1
+                if l2[i] < l3[i]: actual = -1
                 else: actual = 1
                 if answer != actual:
                     err_count += 1
         return float(err_count) / total
 
-def confusionMatrix(l1, l2):
+def confusionMatrix(l1, l2, l3):
     if len(l1) != len(l2):
         print 'size mismatch'
         exit()
     else:
         conf = [0,0,0,0]
         for i in range(len(l1)):
-            if l1[i] < middle: answer = -1
+            if l1[i] < l3[i]: answer = -1
             else: answer = 1
-            if l2[i] < middle: actual = -1
+            if l2[i] < l3[i]: actual = -1
             else: actual = 1
             if actual == 1:
                 if answer > 0.0:
@@ -94,7 +95,10 @@ if __name__ == "__main__":
     feature_cols = [col for col in df_train.columns if col not in holdout]
     test_cols = [col for col in df_train.columns if col in ['score diff']]
     y_train = df_train[test_cols]
+    train_spread = df_train[['spread']]
+    print train_spread
     y_test = df_test[test_cols]
+    test_spread = df_test[['spread']]
     y_pred = []
     with open(datadir[:-8] + 'trainBlend.csv', 'r') as f: 
         data = f.readlines()
@@ -102,12 +106,13 @@ if __name__ == "__main__":
             y_pred.append(float(data[i].strip()))
 
     y_train = y_train.values.T.tolist()[0]
+    train_spread = train_spread.values.T.tolist()[0]
     print "TRAINING SET RESULTS"
-    print "training error: ", compare(y_pred, y_train)
-    print "false positive: ", falsePositive(y_pred, y_train)
-    print "false negative: ", falseNegative(y_pred, y_train)
+    print "training error: ", compare(y_pred, y_train, train_spread)
+    print "false positive: ", falsePositive(y_pred, y_train, train_spread)
+    print "false negative: ", falseNegative(y_pred, y_train, train_spread)
     print "--------------"
-    conf = confusionMatrix(y_pred, y_train)
+    conf = confusionMatrix(y_pred, y_train, train_spread)
 
     print 'confusion matrix: '
     print "actual\t\taway\thome"
@@ -122,12 +127,13 @@ if __name__ == "__main__":
             y_pred.append(float(data[i].strip()))
 
     y_test = y_test.values.T.tolist()[0]
+    test_spread = test_spread.values.T.tolist()[0]
     print "TEST SET RESULTS"
-    print "predictive error: ", compare(y_pred, y_test)
-    print "false positive: ", falsePositive(y_pred, y_test)
-    print "false negative: ", falseNegative(y_pred, y_test)
+    print "predictive error: ", compare(y_pred, y_test, test_spread)
+    print "false positive: ", falsePositive(y_pred, y_test, test_spread)
+    print "false negative: ", falseNegative(y_pred, y_test, test_spread)
     
-    conf = confusionMatrix(y_pred, y_test)
+    conf = confusionMatrix(y_pred, y_test, test_spread)
     print "--------------"
     print 'confusion matrix: '
     print "actual\t\taway\thome"

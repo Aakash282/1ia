@@ -12,8 +12,8 @@ testData = h2o.import_frame(path=testFile)
 
 
 
-train = trainData.drop('away score').drop('home score')
-test = testData.drop('away score').drop('home score')
+train = trainData.drop('away score').drop('home score').drop('spread')
+test = testData.drop('away score').drop('home score').drop('spread')
 
 drf = h2o.random_forest(x = train.drop('score diff'),
 						y = train['score diff'],

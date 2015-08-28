@@ -83,7 +83,7 @@ class game:
                 for idx, w in team.iterrows():
                     if np.mean(w['week year']) < self.week:
                         if feature == 'TOP':
-                            prev.append(self.timeOfPossession(home))
+                            prev.append(self.timeOfPossession(w))
                         else:
                             prev.append(w[feature])
                 if len(prev) > n:
@@ -121,22 +121,14 @@ class game:
                             else:
                                 return (float(points) * -1.0)
 
-    def timeOfPossession(self, home):
-        if home:
-            givenTeam = self.home
-        else:
-            givenTeam = self.away
-        for team in self.season:
-            if list(set(team['team']))[0].strip() == givenTeam:
-                for idx, w in team.iterrows():
-                    if np.mean(w['week year']) == self.week:
-                        top = w['TOP']
-                        minutes, seconds = top.split(':')
-                        top = float(minutes) + float(seconds) / 60.0
-                        oppTop = w['opp_TOP']
-                        minutes, seconds = oppTop.split(':')
-                        oppTop = float(minutes) + float(seconds) / 60.0
-                        return top / (top + oppTop)
+    def timeOfPossession(self, w):
+        top = w['TOP']
+        minutes, seconds = top.split(':')
+        top = float(minutes) + float(seconds) / 60.0
+        oppTop = w['opp_TOP']
+        minutes, seconds = oppTop.split(':')
+        oppTop = float(minutes) + float(seconds) / 60.0
+        return top / (top + oppTop)
 
 
 
@@ -155,11 +147,13 @@ def feature_set(start, stop):
             away = pd.DataFrame.from_dict(data = temp_features['away'], orient = 'index')
             home = pd.DataFrame.from_dict(data = temp_features['home'], orient = 'index')
             score_diff = {'score diff': temp_features['home']['score'] - temp_features['away']['score']}
+            game_features = pd.DataFrame.from_dict(data = temp_features['game'], orient = 'index')
             score_diff = pd.DataFrame.from_dict(data = score_diff, orient = 'index')
             output = pd.DataFrame.append(away, home, ignore_index = True)
-            output = pd.DataFrame.append(output, score_diff, ignore_index = True).transpose()
+            output = pd.DataFrame.append(output, score_diff, ignore_index = True)
+            output = pd.DataFrame.append(output, game_features, ignore_index = True).transpose()
             columns = ['away ' + x for x in temp_features['away']] + \
-                ['home ' + x for x in temp_features['away']] + ['score diff']
+                ['home ' + x for x in temp_features['away']] + ['score diff', 'spread']
             output.columns = columns
             df = pd.DataFrame.append(df, output)
             print output.values
