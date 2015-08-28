@@ -38,7 +38,8 @@ class game:
         '''main use of this class... just call this and read the feature dict'''
         features_home = self.compute_features(1, n)
         features_away = self.compute_features(0, n)
-        return {'home': features_home, 'away': features_away}
+        features_game = self.compute_game_features(n)
+        return {'home': features_home, 'away': features_away, 'game': features_game}
         
         
     def compute_features(self, home, n):
@@ -58,8 +59,12 @@ class game:
         features['penalty yards'] = self.get_feature('penalty_yards', home, n)
         features['num plays'] = self.get_feature('total_plays', home, n)
         features['allowed yards'] = self.get_feature('opp_total_yards', home, n)
-        features['spread'] = self.spread(home)
         features['TOP'] = self.timeOfPossession(home)
+        return features
+
+    def compute_game_features(self, n):
+        features = {}
+        features['spread'] = self.spread()
         return features
     
     def get_feature(self, feature, home, n):
@@ -98,11 +103,8 @@ class game:
                     if np.mean(w['week year']) == self.week:
                         return w['score']
 
-    def spread(self, home):
-        if home:
-            givenTeam = self.home
-        else:
-            givenTeam = self.away
+    def spread(self):
+        givenTeam = self.home
         for team in self.season:
             if list(set(team['team']))[0].strip() == givenTeam:
                 for idx, w in team.iterrows():
@@ -113,7 +115,7 @@ class game:
                         else:
                             favorite,points = spread.split("-")
                             favorite = favorite.strip(" ")
-                            if (favorite == givenTeam) == home:
+                            if favorite == givenTeam:
                                 return float(points)
                             else:
                                 return (float(points) * -1.0)
@@ -134,6 +136,8 @@ class game:
                         minutes, seconds = oppTop.split(':')
                         oppTop = float(minutes) + float(seconds) / 60.0
                         return top / (top + oppTop)
+
+
 
 def feature_set(start, stop):
     for i in range(start, stop+1):
