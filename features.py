@@ -83,7 +83,7 @@ class game:
                 for idx, w in team.iterrows():
                     if np.mean(w['week year']) < self.week:
                         if feature == 'TOP':
-                            prev.append(self.timeOfPossession(home))
+                            prev.append(self.timeOfPossession(w))
                         else:
                             prev.append(w[feature])
                 if len(prev) > n:
@@ -121,22 +121,15 @@ class game:
                             else:
                                 return (float(points) * -1.0)
 
-    def timeOfPossession(self, home):
-        if home:
-            givenTeam = self.home
-        else:
-            givenTeam = self.away
-        for team in self.season:
-            if list(set(team['team']))[0].strip() == givenTeam:
-                for idx, w in team.iterrows():
-                    if np.mean(w['week year']) == self.week:
-                        top = w['TOP']
-                        minutes, seconds = top.split(':')
-                        top = float(minutes) + float(seconds) / 60.0
-                        oppTop = w['opp_TOP']
-                        minutes, seconds = oppTop.split(':')
-                        oppTop = float(minutes) + float(seconds) / 60.0
-                        return top / (top + oppTop)
+    def timeOfPossession(self, w):
+
+        top = w['TOP']
+        minutes, seconds = top.split(':')
+        top = float(minutes) + float(seconds) / 60.0
+        oppTop = w['opp_TOP']
+        minutes, seconds = oppTop.split(':')
+        oppTop = float(minutes) + float(seconds) / 60.0
+        return top / (top + oppTop)
 
 
 
