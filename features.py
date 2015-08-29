@@ -61,6 +61,8 @@ class game:
         features['num plays'] = self.get_feature('total_plays', home, n)
         features['allowed yards'] = self.get_feature('opp_total_yards', home, n)
         features['TOP'] = self.get_feature('TOP', home, n)
+        win_loss = self.winLoss(home)
+        features['wins'], features['losses'] = win_loss['wins'], win_loss['losses']
         return features
 
     def compute_game_features(self, n):
@@ -129,6 +131,33 @@ class game:
         minutes, seconds = oppTop.split(':')
         oppTop = float(minutes) + float(seconds) / 60.0
         return top / (top + oppTop)
+    
+    def winLoss(self, home):
+        table = pd.DataFrame()
+        for team in self.season:
+            table = pd.DataFrame.append(table, team)
+        if home:
+            team = self.home
+        else:
+            team = self.away
+            
+        home_table = TFns.filter_table(table, 'team', team + ' ')
+        home_table = TFns.get_previous_stats(home_table, self.week, 17)
+        if type(home_table) == type(None):
+            return {'wins': 0, 'losses': 0}
+        home_counts = pd.Series.value_counts(home_table['score'] > home_table['opp_score'])
+        home_counts = home_counts.to_dict()
+        if len( home_counts.keys() ) == 1:
+            if home_counts.keys()[0]:
+                home_wins = home_counts[True]
+                home_losses = 0
+            elif not home_counts.keys()[0]:
+                home_losses = home_counts[False]
+                home_wins = 0
+        else:
+            home_wins = home_counts[True]
+            home_losses = home_counts[False]
+        return {'wins': home_wins, 'losses': home_losses}
 
 
 

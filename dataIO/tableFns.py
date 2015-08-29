@@ -51,20 +51,19 @@ def team_array():
     return combined
 
 
-def team_array_1(team):
+def team_array_1(team, table):
     '''exactly the same as team_array except for a specific team.  much cleaner
     than the other function; may delete team_array.  ex:
     team_array_1('Dallas Cowboys') == team_array()['Dallas Cowboys']
     '''
     # There is a weird spacing issue?
     team += " "
-    table = load.getDataset()
     return pd.merge(filter_table(table, 'home_team', team), \
              filter_table(table, 'away_team', team), how = 'outer')
 
 def filter_table(table, column, entry):
     '''filters the table to only include certain entries'''
-    return table[table[column] == entry]
+    return table[(table[column]) == entry]
     
 def get_values(table, column):
     '''returns all unique values for a given column'''
@@ -77,8 +76,10 @@ def get_previous_stats(table, week, n):
     index = 0
     if week in table_lst:
         index = table_lst.index(week)
+    else:
+        index = table_lst.index(week + 1)
     if index == 0:
-        print 'there is no previous stat or week doesnt exist'
+        return None
     if index < n:
         return table[0:index]
     return table[index  - n: index]
