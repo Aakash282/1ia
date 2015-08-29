@@ -139,7 +139,7 @@ def feature_set(start, stop):
         for idx, row in league_data.iterrows():
             temp_game = game(row['home_team'], row['away_team'], str(row['week year']) + ' ' + str(i))
             # Adjust this to change the length of the moving average #FuckMagicNumbers #GlenGeorgeRuinedMe
-            movingAvgLength = 4
+            movingAvgLength = 3
             temp_features = temp_game.get_features(movingAvgLength)
             if None in temp_features['away'].values() or \
                None in temp_features['home'].values():

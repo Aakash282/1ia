@@ -1,10 +1,16 @@
 import numpy as np
 import os
  
-training = ['trainRF.csv', 'trainDL.csv', 'trainLM.csv', 'trainDT.csv']
-testing = ['testRF.csv', 'testDL.csv', 'testLM.csv', 'testDT.csv']
+# training = ['trainRF.csv', 'trainDL.csv', 'trainLM.csv', 'trainDT.csv']
+# testing = ['testRF.csv', 'testDL.csv', 'testLM.csv', 'testDT.csv']
+# training = ['trainRF.csv', 'trainDL.csv', 'trainLM.csv']
+# testing = ['testRF.csv', 'testDL.csv', 'testLM.csv']
+training = ['trainDL.csv', 'trainRF.csv']
+testing = ['testDL.csv', 'testRF.csv']
+# training = ['trainLM.csv']
+# testing = ['testLM.csv']
 datadir = os.path.expanduser('~') + '/FSA/data/'
-models = 4
+models = 2
 trainL = 0
 testL = 0
 # get len of data
@@ -27,6 +33,7 @@ for filename in training:
 
 print len(preds)
 with open(datadir + 'trainBlend.csv', 'w') as f: 
+	f.write('predict\n')
 	for i in range(len(preds)):
 		preds[i] = preds[i] / models
 		f.write(str(preds[i]) + '\n')
@@ -42,6 +49,7 @@ for filename in testing:
 print len(preds)
 
 with open(datadir + 'testBlend.csv', 'w') as f: 
+	f.write('predict\n')
 	for i in range(len(preds)):
 		preds[i] = preds[i] / models
 		f.write(str(preds[i]) + '\n')
