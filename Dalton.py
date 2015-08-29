@@ -19,8 +19,9 @@ drf = h2o.random_forest(x = train.drop('score diff'),
 						y = train['score diff'],
 						validation_x = train.drop('score diff'),
 						validation_y = train['score diff'],
-						ntrees=500, 
-						max_depth=50)
+						ntrees=100, 
+						max_depth=5,
+						nfolds=7)
 drf.show()
 
 
@@ -34,8 +35,9 @@ dl = h2o.deeplearning(x = train.drop('score diff'),
 					  y = train['score diff'],
 					  validation_x = train.drop('score diff'),
 					  validation_y = train['score diff'],
-					  nfolds=2,
-					  epochs=500)
+					  nfolds=7,
+					  epochs=150,
+					  hidden=[10, 5])
 dl.show()
 
 dl_preds = dl.predict(test).as_data_frame(use_pandas=True)
@@ -46,7 +48,8 @@ dl_preds.to_csv(datadir + "trainDL.csv", index=False)
 glm = h2o.glm(x = train.drop('score diff'),
 			  y = train['score diff'],
 			  validation_x = train.drop('score diff'),
-			  validation_y = train['score diff'])
+			  validation_y = train['score diff'],
+			  nfolds=4)
 glm.show()
 
 glm_preds = glm.predict(test).as_data_frame(use_pandas=True)
