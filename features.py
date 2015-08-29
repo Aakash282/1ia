@@ -15,7 +15,7 @@ def movingaverage(interval, window_size):
 class game:
     '''The idea behind this class is to be able to make a prediction for a 
     possible game that may occur in the future'''
-    def __init__(self, home_team, away_team, week_year):
+    def __init__(self, home_team, away_team, week_year, roof, time):
         self.home = home_team.strip()
         self.away = away_team.strip()
         if len(week_year) > 2:
@@ -24,6 +24,8 @@ class game:
         else:
             print 'improper time field format!'
 
+        self.roof = roof
+        self.time = time
         self.season = load.loadYear(self.year)
 
     
@@ -68,6 +70,8 @@ class game:
     def compute_game_features(self, n):
         features = {}
         features['spread'] = self.spread()
+        features['roof'] = self.getRoof()
+        features['time'] = self.getTime()
         return features
     
     def get_feature(self, feature, home, n):
@@ -159,14 +163,27 @@ class game:
             home_losses = home_counts[False]
         return {'wins': home_wins, 'losses': home_losses}
 
-
+    def getRoof(self):
+        if self.roof == 'outdoors':
+            return 1
+        return 0
+    
+    def getTime(self):
+        if 'pm' in self.time:
+            time = 12 * 60
+        elif 'am' in self.time:
+            time = 0
+        timeStr = self.time[0:len(self.time) - 2]
+        time += int(timeStr.split(':')[0]) * 60 + int(timeStr.split(':')[1])
+        return time
 
 def feature_set(start, stop):
     for i in range(start, stop+1):
         df = pd.DataFrame()
         league_data = load.getYearData(i)
         for idx, row in league_data.iterrows():
-            temp_game = game(row['home_team'], row['away_team'], str(row['week year']) + ' ' + str(i))
+            temp_game = game(row['home_team'], row['away_team'], str(row['week year']) + ' ' + str(i), \
+                             row['Roof'], row['time_of_day_(ET)'])
             # Adjust this to change the length of the moving average #FuckMagicNumbers #GlenGeorgeRuinedMe
             movingAvgLength = 3
             temp_features = temp_game.get_features(movingAvgLength)
@@ -182,7 +199,7 @@ def feature_set(start, stop):
             output = pd.DataFrame.append(output, score_diff, ignore_index = True)
             output = pd.DataFrame.append(output, game_features, ignore_index = True).transpose()
             columns = ['away ' + x for x in temp_features['away']] + \
-                ['home ' + x for x in temp_features['away']] + ['score diff', 'spread']
+                ['home ' + x for x in temp_features['away']] + ['score diff', 'spread', 'roof', 'timeofgame']
             output.columns = columns
             df = pd.DataFrame.append(df, output)
             print output.values
