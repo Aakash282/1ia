@@ -23,13 +23,14 @@ def parseGame(game, week):
     if len(lineScore) > 12:
       features.append(lineScore[7].text.split('(')[0])
       features.append(lineScore[0].text.split('(')[0])
-      awayScore = lineScore[6].text
-      homeScore = lineScore[13].text  
+      awayScores = [lineScore[x].text for x in range(1,5)] + [lineScore[6].text]
+      homeScores = [lineScore[x].text for x in range(8,12)] + [lineScore[13].text]
+
     else:
       features.append(lineScore[6].text.split('(')[0])
       features.append(lineScore[0].text.split('(')[0])
-      awayScore = lineScore[5].text
-      homeScore = lineScore[11].text  
+      awayScores = [lineScore[x].text for x in range(1,6)]
+      homeScores = [lineScore[x].text for x in range(7,12)]
 
     spread = ""
     time = ""
@@ -73,8 +74,9 @@ def parseGame(game, week):
     features.extend(refs)
 
     # Score
-    home.append(homeScore)
-    away.append(awayScore)
+    home.extend(homeScores)
+    away.extend(awayScores)
+
     
     # First Downs
     away.append(teamStats[1].text)
@@ -139,14 +141,14 @@ def parseGame(game, week):
 
     return features
 
-home = os.getcwd()
-years = [x for x in range(2001, 2006)]
+home = os.path.expanduser('~') + "/FSA/data/"
+years = [x for x in range(2010, 2015)]
 weeks = [x+1 for x in range(17)]
 for y in years:
-  with open("features" + str(y), 'w') as f:
+  with open(home + "rawdata/rawdata" + str(y), 'w') as f:
     for w in weeks:
       print "Year: %d, Week: %d" % (y, w)
-      games = glob(home + '/' + str(y) + '/' + str(w) + '/' + '2*.htm')
+      games = glob(home + 'boxscores' + '/' + str(y) + '/' + str(w) + '/' + '2*.htm')
       for game in games:
         gameData = parseGame(game, w)
         # Write the game data

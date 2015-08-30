@@ -16,7 +16,7 @@ def parse():
     p = pd.read_csv(datadir + "headers.csv", sep = ";")
     for y in range(2001, 2015):
         print y
-        lst_temp = pd.read_csv(datadir + "features/features%d" % y, sep=";")
+        lst_temp = pd.read_csv(datadir + "rawdata/rawdata%d" % y, sep=";")
         for line in range(len(lst_temp['week'])):
             lst_temp['week'][line] = str(lst_temp['week'][line]) + " %d" %y
           
@@ -33,7 +33,7 @@ def parseYear():
     for y in range(2001, 2015):
         print y
         p = pd.read_csv(datadir + "headers.csv", sep = ";")
-        lst_temp = pd.read_csv(datadir + "features/features%d" % y, sep=";")
+        lst_temp = pd.read_csv(datadir + "rawdata/rawdata%d" % y, sep=";")
         p = pd.merge(p, lst_temp, how = 'outer')
         columns = list(p.keys())
         columns[0] = 'week year'
