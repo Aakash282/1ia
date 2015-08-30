@@ -57,25 +57,8 @@ class game:
             feature_list.remove(elem)
         for elem in feature_list:
             elem = elem.strip()
-            #print elem
             features[elem] = self.get_feature(elem, home, n)
-        '''        
-        features['rush'] = self.get_feature('rush_yards', home, n)
-        features['rush att'] = self.get_feature('rush_attempts', home, n)
-        features['pass'] = self.get_feature('pass_yards', home, n)
-        features['pass att'] = self.get_feature('pass_attempt', home, n)
-        features['INT'] = self.get_feature('INT', home, n)
-        features['first_downs'] = self.get_feature('first_downs', home, n)
-        features['conv 3d'] = self.get_feature('3rd_down_converted', home, n)
-        features['score'] = self.score(home)
-        features['points'] = self.get_feature('score', home, n)
-        features['turnovers forced'] = self.get_feature('opp_turnovers', home, n)
-        features['sacks forced'] = self.get_feature('opp_sacks', home, n)
-        features['penalty yards'] = self.get_feature('penalty_yards', home, n)
-        features['num plays'] = self.get_feature('total_plays', home, n)
-        features['allowed yards'] = self.get_feature('opp_total_yards', home, n)
-        features['TOP'] = self.get_feature('TOP', home, n)
-        '''
+
         features['score'] = self.score(home)
         win_loss = self.winLoss(home)
         features['wins'], features['losses'] = win_loss['wins'], win_loss['losses']
