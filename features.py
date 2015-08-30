@@ -48,6 +48,18 @@ class game:
         '''input is a boolean for whether computing feature for home team. This 
         function simply makes calls to other feature computing functions'''
         features = {}
+        feature_list = list(self.season[0].keys())
+        remove_list = feature_list[0:7] + ['attendance', 'home_field?', 'Surface']
+        for elem in feature_list:
+            if 'ref' in elem or 'score' in elem:
+                remove_list.append(elem)
+        for elem in remove_list:
+            feature_list.remove(elem)
+        for elem in feature_list:
+            elem = elem.strip()
+            #print elem
+            features[elem] = self.get_feature(elem, home, n)
+        '''        
         features['rush'] = self.get_feature('rush_yards', home, n)
         features['rush att'] = self.get_feature('rush_attempts', home, n)
         features['pass'] = self.get_feature('pass_yards', home, n)
@@ -63,6 +75,8 @@ class game:
         features['num plays'] = self.get_feature('total_plays', home, n)
         features['allowed yards'] = self.get_feature('opp_total_yards', home, n)
         features['TOP'] = self.get_feature('TOP', home, n)
+        '''
+        features['score'] = self.score(home)
         win_loss = self.winLoss(home)
         features['wins'], features['losses'] = win_loss['wins'], win_loss['losses']
         return features
@@ -88,7 +102,7 @@ class game:
                 prev = []
                 for idx, w in team.iterrows():
                     if np.mean(w['week year']) < self.week:
-                        if feature == 'TOP':
+                        if 'TOP' in feature:
                             prev.append(self.timeOfPossession(w))
                         else:
                             prev.append(w[feature])
@@ -153,15 +167,16 @@ class game:
         home_counts = home_counts.to_dict()
         if len( home_counts.keys() ) == 1:
             if home_counts.keys()[0]:
-                home_wins = home_counts[True]
+                home_wins = 1
                 home_losses = 0
             elif not home_counts.keys()[0]:
-                home_losses = home_counts[False]
+                home_losses = 1
                 home_wins = 0
         else:
             home_wins = home_counts[True]
             home_losses = home_counts[False]
-        return {'wins': home_wins, 'losses': home_losses}
+        normalize = float(home_wins + home_losses)
+        return {'wins': home_wins / normalize, 'losses': home_losses / normalize}
 
     def getRoof(self):
         if self.roof == 'outdoors':
@@ -202,6 +217,6 @@ def feature_set(start, stop):
                 ['home ' + x for x in temp_features['away']] + ['score diff', 'spread', 'roof', 'timeofgame']
             output.columns = columns
             df = pd.DataFrame.append(df, output)
-            #print output.values
+            print output.values
         df.to_csv(ld.getPath() + '/data/NNinput/features%d.csv' % i, index = False)
         
