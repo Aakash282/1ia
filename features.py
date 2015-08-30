@@ -61,7 +61,8 @@ class game:
 
         features['score'] = self.score(home)
         win_loss = self.winLoss(home)
-        features['wins'], features['losses'] = win_loss['wins'], win_loss['losses']
+        features['wins'], features['losses']  = win_loss['wins'], win_loss['losses']
+        features['streak'] = win_loss['streak']
         return features
 
     def compute_game_features(self, n):
@@ -145,7 +146,7 @@ class game:
         home_table = TFns.filter_table(table, 'team', team + ' ')
         home_table = TFns.get_previous_stats(home_table, self.week, 17)
         if type(home_table) == type(None):
-            return {'wins': 0, 'losses': 0}
+            return {'wins': 0.0, 'losses': 0.0, 'streak': 0.0}
         home_counts = pd.Series.value_counts(home_table['score'] > home_table['opp_score'])
         home_counts = home_counts.to_dict()
         if len( home_counts.keys() ) == 1:
@@ -159,7 +160,23 @@ class game:
             home_wins = home_counts[True]
             home_losses = home_counts[False]
         normalize = float(home_wins + home_losses)
-        return {'wins': home_wins / normalize, 'losses': home_losses / normalize}
+        streak = self.getStreak(home_table)
+        return {'wins': home_wins / normalize, 'losses': home_losses / normalize, 'streak': streak }
+
+    def getStreak(self, table):
+        streak = 0
+        results = table['score'] > table['opp_score']
+        length = len(results)
+        last = results[length-1]
+        for i in range(length):
+            if results[length-1-i] == last and last:
+                streak += 1
+            elif results[length-1-i] == last and not last:
+                streak -= 1
+            else:
+                break
+        print streak
+        return float(streak)
 
     def getRoof(self):
         if self.roof == 'outdoors':
