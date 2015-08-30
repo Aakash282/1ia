@@ -175,7 +175,6 @@ class game:
                 streak -= 1
             else:
                 break
-        print streak
         return float(streak)
 
     def getRoof(self):
