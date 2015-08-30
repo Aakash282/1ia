@@ -8,6 +8,9 @@ from dataIO import loadData as load
 from movingMedian import RunningMedian
 from dataIO import loadRaw as ld
 
+global season_table
+season_table = {}
+
 def movingaverage(interval, window_size):
     window = np.ones(int(window_size))/float(window_size)
     return np.convolve(interval, window, 'same')
@@ -26,7 +29,9 @@ class game:
 
         self.roof = roof
         self.time = time
-        self.season = load.loadYear(self.year)
+        if 'season_table[self.year]' not in globals():
+            season_table[self.year] = load.loadYear(self.year) 
+        self.season = season_table[self.year]
 
     
     def get_stats(self, n):
