@@ -10,7 +10,7 @@ from matplotlib import pyplot as plt
 dir_prefix = os.path.expanduser('~') + "/FSA/data/NNinput/"
 
 training_set = []
-for i in range(2001, 2002):
+for i in range(2001, 2014):
 	training_set.append(pd.DataFrame.from_csv(dir_prefix + "features%d.csv" % i))
 
 training_set = pd.concat(training_set)

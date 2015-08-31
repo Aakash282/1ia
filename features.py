@@ -95,10 +95,11 @@ class game:
                             prev.append(self.timeOfPossession(w))
                         else:
                             prev.append(w[feature])
-                if len(prev) > n:
-                    return np.mean(prev[-n:])
-                else: 
-                    return None 
+                    else: 
+                        if len(prev) > n:
+                            return np.mean(prev[-n:])
+                        else: 
+                            return None 
 
 
     def score(self, home):

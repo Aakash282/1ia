@@ -8,7 +8,7 @@ from matplotlib import pyplot as plt
 from NN import bpnn
 import math
 import os
-from sklearn import svm
+from sklearn.svm import SVR
 
 eps = 0
 
@@ -119,11 +119,13 @@ if __name__ == "__main__":
     datadir = os.path.expanduser('~') + '/FSA/data/NNinput/'
     df_train = pd.DataFrame.from_csv(datadir + "training_set.csv")
     df_test = pd.DataFrame.from_csv(datadir + "testing_set.csv")
-    holdout = []
+    holdout = ['score diff', 'home_score', 'away_score', 'spread']
     feature_cols = [col for col in df_train.columns if col not in holdout]
-    test_cols = [col for col in df_train.columns if col in ['score diff', 'home_score', 'away_score']]
+    test_cols = [col for col in df_train.columns if col in ['score diff']]
+    x_train = df_train[feature_cols]
     y_train = df_train[test_cols]
     train_spread = df_train[['spread']]
+    x_test = df_test[feature_cols]
     y_test = df_test[test_cols]
     test_spread = df_test[['spread']]
     y_pred = []
@@ -132,6 +134,10 @@ if __name__ == "__main__":
         for i in range(1, len(data)):
             y_pred.append(float(data[i].strip()))
 
+    model = ensemble.RandomForestRegressor(n_estimators=50)
+    print x_train.shape, y_train.shape
+    model.fit(x_train, y_train.values.T.tolist()[0])
+    y_pred = model.predict(x_train)
     y_train = y_train.values.T.tolist()[0]
     train_spread = train_spread.values.T.tolist()[0]
     print "TRAINING SET RESULTS"
@@ -153,7 +159,7 @@ if __name__ == "__main__":
         data = f.readlines()
         for i in range(1, len(data)):
             y_pred.append(float(data[i].strip()))
-
+    y_pred = model.predict(x_test)
     y_test = y_test.values.T.tolist()[0]
     test_spread = test_spread.values.T.tolist()[0]
     print "TEST SET RESULTS"
