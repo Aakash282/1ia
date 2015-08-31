@@ -7,6 +7,8 @@ from dataIO import tableFns as TFns
 from dataIO import loadData as load
 from movingMedian import RunningMedian
 from dataIO import loadRaw as ld
+import multiprocessing 
+from joblib import Parallel, delayed
 
 global season_table
 season_table = {}
@@ -33,7 +35,6 @@ class game:
             season_table[self.year] = load.loadYear(self.year) 
         self.season = season_table[self.year]
 
-    
     def get_stats(self, n):
         home_table = load.getTeamData(self.year, self.home)
         away_table = load.getTeamData(self.year, self.away)
@@ -47,7 +48,6 @@ class game:
         features_away = self.compute_features(0, n)
         features_game = self.compute_game_features(n)
         return {'home': features_home, 'away': features_away, 'game': features_game}
-        
         
     def compute_features(self, home, n):
         '''input is a boolean for whether computing feature for home team. This 
@@ -99,7 +99,6 @@ class game:
                     return np.mean(prev[-n:])
                 else: 
                     return None 
-
 
     def score(self, home):
         '''get the score for the given team'''
@@ -196,8 +195,17 @@ class game:
         time += int(timeStr.split(':')[0]) * 60 + int(timeStr.split(':')[1])
         return time
 
+def get_feature_set(start, stop):
+    '''parallelized version of feature_set'''
+    # the -1 is because I like to use my computer while running things
+    num_cores = min((stop - start), multiprocessing.cpu_count() - 1)
+    # to ensure that at least one core is being used
+    num_cores = max(num_cores, 1)
+    Parallel(n_jobs = num_cores)(delayed(feature_set)(x, x) for x in range(start, stop))
+
 def feature_set(start, stop):
     for i in range(start, stop+1):
+        print i
         df = pd.DataFrame()
         league_data = load.getYearData(i)
         for idx, row in league_data.iterrows():
@@ -221,6 +229,6 @@ def feature_set(start, stop):
                 ['home ' + x for x in temp_features['away']] + ['score diff', 'spread', 'roof', 'timeofgame']
             output.columns = columns
             df = pd.DataFrame.append(df, output)
-            print output.values
+            #print output.values
         df.to_csv(ld.getPath() + '/data/NNinput/features%d.csv' % i, index = False)
         
