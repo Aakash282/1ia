@@ -8,7 +8,7 @@ week.  The histogram plot is of the log returns.  Values are final money for
 an investment of 1'''
 
 # Success rate
-p = 0.6
+p = 0.537
 # amount of money to bet each week as a percent of total.  
 bet_percent = 0.4
 # number of simulations 

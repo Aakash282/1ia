@@ -20,8 +20,8 @@ drf = h2o.random_forest(x = train.drop('score diff'),
 						validation_x = train.drop('score diff'),
 						validation_y = train['score diff'],
 						ntrees=100, 
-						max_depth=5,
-						nfolds=7)
+						max_depth=40,
+						nfolds=2)
 drf.show()
 
 
@@ -35,9 +35,9 @@ dl = h2o.deeplearning(x = train.drop('score diff'),
 					  y = train['score diff'],
 					  validation_x = train.drop('score diff'),
 					  validation_y = train['score diff'],
-					  nfolds=7,
+					  nfolds=2,
 					  epochs=150,
-					  hidden=[10, 5])
+					  hidden=[70, 70])
 dl.show()
 
 dl_preds = dl.predict(test).as_data_frame(use_pandas=True)

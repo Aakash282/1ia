@@ -10,7 +10,7 @@ testing = ['testDL.csv', 'testRF.csv']
 # training = ['trainLM.csv']
 # testing = ['testLM.csv']
 datadir = os.path.expanduser('~') + '/FSA/data/'
-models = 2
+models = 4
 trainL = 0
 testL = 0
 # get len of data
