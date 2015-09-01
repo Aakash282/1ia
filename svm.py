@@ -119,7 +119,7 @@ if __name__ == "__main__":
     datadir = os.path.expanduser('~') + '/FSA/data/NNinput/'
     df_train = pd.DataFrame.from_csv(datadir + "training_set.csv")
     df_test = pd.DataFrame.from_csv(datadir + "testing_set.csv")
-    holdout = ['score diff', 'home_score', 'away_score', 'spread']
+    holdout = ['score diff', 'home score', 'away score', 'spread']
     feature_cols = [col for col in df_train.columns if col not in holdout]
     test_cols = [col for col in df_train.columns if col in ['score diff']]
     x_train = df_train[feature_cols]
@@ -134,8 +134,7 @@ if __name__ == "__main__":
         for i in range(1, len(data)):
             y_pred.append(float(data[i].strip()))
 
-    model = SVR(C=1.0, cache_size=200, coef0=0.0, degree=3, epsilon=0.1, gamma=0.0, kernel='poly', \
-        max_iter=-1, shrinking=True, tol=0.001, verbose=False)
+    model = SVR(kernel='rbf')# C=1.0, cache_size=200, coef0=0.0, degree=3, epsilon=0.1, gamma=0.0, kernel='linear', max_iter=-1, shrinking=True, tol=0.001, verbose=False)
     print x_train.shape, y_train.shape
     model.fit(x_train, y_train.values.T.tolist()[0])
     y_pred = model.predict(x_train)
