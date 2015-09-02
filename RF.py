@@ -166,7 +166,7 @@ if __name__ == "__main__":
     y3 = model3.predict(x_train)
     y4 = model4.predict(x_train)
     y5 = model5.predict(x_train)
-    y6 = model5.predict(x_train)
+    y6 = model6.predict(x_train)
     y_pred = [fit(np.mean([y1[i], y2[i], y3[i], y4[i], y5[i], y6[i]])) for i in range(len(y1))]
     print min(y_pred), max(y_pred), np.mean(y_pred)
     # y_pred = model.predict(x_train)
@@ -192,7 +192,7 @@ if __name__ == "__main__":
     y3 = model3.predict(x_test)
     y4 = model4.predict(x_test)
     y5 = model5.predict(x_test)
-    y6 = model5.predict(x_test)
+    y6 = model6.predict(x_test)
     y_pred = [fit(np.mean([y1[i], y2[i], y3[i], y4[i], y5[i], y6[i]])) for i in range(len(y1))]
     # y_pred = model.predict(x_test)
     y_test = y_test.values.T.tolist()[0]
