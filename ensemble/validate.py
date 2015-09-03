@@ -12,6 +12,13 @@ from sklearn import svm
 
 eps = 0
 
+########################################################
+# FOR ALL OF THE BELOW FUNCTIONS                       #
+# l1 is the prediction list                            #
+# l2 is the actual score difference                    #
+# l3 is the spread                                     #
+########################################################
+
 def compare(l1, l2, l3):
     if len(l1) != len(l2) and len(l2) != len(l3):
         print 'prediction list wrong size'
@@ -115,23 +122,7 @@ def bets_made(l1, l2, l3):
 
     return total
 
-if __name__ == "__main__":
-    datadir = os.path.expanduser('~') + '/FSA/data/NNinput/'
-    df_train = pd.DataFrame.from_csv(datadir + "training_set.csv")
-    df_test = pd.DataFrame.from_csv(datadir + "testing_set.csv")
-    holdout = []
-    feature_cols = [col for col in df_train.columns if col not in holdout]
-    test_cols = [col for col in df_train.columns if col in ['score diff', 'home_score', 'away_score']]
-    y_train = df_train[test_cols]
-    train_spread = df_train[['spread']]
-    y_test = df_test[test_cols]
-    test_spread = df_test[['spread']]
-    y_pred = []
-    with open(datadir[:-8] + 'trainBlend.csv', 'r') as f: 
-        data = f.readlines()
-        for i in range(1, len(data)):
-            y_pred.append(float(data[i].strip()))
-
+def trainError(y_pred, y_train, train_spread):
     y_train = y_train.values.T.tolist()[0]
     train_spread = train_spread.values.T.tolist()[0]
     print "TRAINING SET RESULTS"
@@ -139,21 +130,14 @@ if __name__ == "__main__":
     print "false positive: ", falsePositive(y_pred, y_train, train_spread)
     print "false negative: ", falseNegative(y_pred, y_train, train_spread)
     print "bets made: ", bets_made(y_pred, y_train, train_spread)
-    print "--------------"
     conf = confusionMatrix(y_pred, y_train, train_spread)
-
+    print "--------------"
     print 'confusion matrix: '
-    print "actual\t\taway\thome"
+    print "actual\t\taway\thome+"
     print "predicted away\t%d\t%d" % (conf[0], conf[1])
-    print "predicted home\t%d\t%d" % (conf[2], conf[3])
-    print "#################################"
+    print "predicted home+\t%d\t%d" % (conf[2], conf[3])
 
-    y_pred = []
-    with open(datadir[:-8] + 'testBlend.csv', 'r') as f: 
-        data = f.readlines()
-        for i in range(1, len(data)):
-            y_pred.append(float(data[i].strip()))
-
+def testError(y_pred, y_test, test_spread):
     y_test = y_test.values.T.tolist()[0]
     test_spread = test_spread.values.T.tolist()[0]
     print "TEST SET RESULTS"
@@ -169,10 +153,14 @@ if __name__ == "__main__":
     print "predicted away\t%d\t%d" % (conf[0], conf[1])
     print "predicted home\t%d\t%d" % (conf[2], conf[3])
 
+def plotHist(l1, l2, l3):
+    l2 = l2.values.T.tolist()[0]
+    l3 = l3.values.T.tolist()[0]
+
     plt.title("Blended Regression Predictions")
     plt.xlabel("Prediction")
     plt.ylabel("Prediction Frequency")
-    plt.hist(y_pred, 100, normed=True, color='b')
-    plt.hist(y_test, 100, normed=True, color='g')
-    plt.hist(test_spread, 100, normed=True, color='r')
+    plt.hist(l1, 100, normed=True, color='b')
+    plt.hist(l2, 100, normed=True, color='g')
+    plt.hist(l3, 100, normed=True, color='r')
     plt.show()

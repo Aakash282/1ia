@@ -3,6 +3,7 @@ import pandas as pd
 import re
 
 def loadYear(year):
+    # Creates and returns a season DataFrame for a given year
     datadir = os.path.expanduser('~') + "/FSA/data/teamdatabyyear/"
     yearDataPath = datadir + "teamdata%d/" % year
     teamFiles = os.listdir(yearDataPath)
