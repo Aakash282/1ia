@@ -5,16 +5,18 @@ import pandas as pd
 import os 
 
 def getPath():
-    # Returns path to base directory
+    '''Returns path to base directory'''
     base_dir = os.getcwd().split('/')
     base_dir = '/' + base_dir[1] + '/' + base_dir[2] + '/' + base_dir[3]
     return base_dir
 
 def parse():
-    # Reads in yearly raw data and generates aggregate NFL0114_TeamStats_raw.csv
+    '''Reads in yearly raw data and generates aggregate NFL0114_TeamStats_raw.csv'''
+    # Note: Not actually sure that this function is ever called
     base_dir = getPath()
     data_dir = base_dir + '/data/'
 
+    # aggregate_data is where every year's data is added
     aggregate_data = pd.read_csv(data_dir + "headers.csv", sep = ";")
     for year in range(2001, 2015):
         print year
@@ -29,7 +31,10 @@ def parse():
     aggregate_data.to_csv(data_dir + "NFL0114_TeamStats_raw.csv")
 
 def parseYear():
-    # Reads in yearly raw data and generates csv for each year
+    ''' Reads in yearly raw data and generates csv for each year
+        Ideally should be combined with parse() so that either parse calls
+        parseYear or parseYear() is eliminated completely'''
+    # Note: Not actually sure that this function is ever called either
     base_dir = getPath()
     data_dir = base_dir + '/data/'
 
