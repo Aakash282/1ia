@@ -5,7 +5,7 @@
 import numpy as np 
 
 eps = 0.0
-amp = 1.0
+amp = 1.3
 
 def blend(preds):
 	# l is the number of predictions in each prediction set
@@ -17,7 +17,7 @@ def blend(preds):
 	results = []
 	for i in range(l):
 		# take the average of all predictions
-		results.append(np.mean([p[i] for p in preds]))
+		results.append(np.mean([pdfFit(p[i]) for p in preds]))
 
 	return results
 
@@ -37,5 +37,9 @@ def pdfFit(val):
         return 7.1
     if val < -6 and val > -8: 
         return -7.1
+    # if val < 6 and val > 3.7:
+    # 	return 6
+    # if val < -3.7 and val > -6:
+    # 	return -6
 
     return round(amp*val)
