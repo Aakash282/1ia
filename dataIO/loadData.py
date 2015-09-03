@@ -29,4 +29,8 @@ def getFeatures(year):
     datadir = os.path.expanduser('~') + "/FSA/data/NNinput/"
     yearDataPath = datadir + "features%d.csv" % year
     return pd.read_csv(yearDataPath, index_col = False)
+
+def getDVOA():
+    datadir = os.path.expanduser('~') + "/FSA/data/"
+    return pd.read_csv(datadir + 'DVOA.csv')
     
