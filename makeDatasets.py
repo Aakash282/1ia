@@ -1,7 +1,7 @@
 import pandas as pd
 import os
-import features
-from dataIO import loadData as ld 
+from features import features
+from dataIO import loadData as ld
 from matplotlib import pyplot as plt
 
 # features.get_feature_set(2001, 2014)
