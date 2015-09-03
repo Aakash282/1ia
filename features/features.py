@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from dataIO import tableFns as TFns
 from dataIO import loadData as load
-from movingMedian import RunningMedian
+from lib.movingMedian import RunningMedian
 from dataIO import loadRaw as ld
 import multiprocessing 
 from joblib import Parallel, delayed

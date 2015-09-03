@@ -1,10 +1,10 @@
 import pandas as pd
 import os
-import features
-from dataIO import loadData as ld 
 from matplotlib import pyplot as plt
+from features import features
 
-# features.get_feature_set(2001, 2014)
+
+features.get_feature_set(2014, 2015)
 
 # Load in the data
 dir_prefix = os.path.expanduser('~') + "/FSA/data/NNinput/"
