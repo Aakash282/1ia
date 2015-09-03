@@ -52,5 +52,5 @@ def feature_set(start, stop):
             output.columns = columns
             df = pd.DataFrame.append(df, output)
             #print output.values
-        df.to_csv(os.path.expanduser('~') + '/FSA/data/NNinput/features%d.csv' % i, index = False)
+        df.to_csv(os.path.expanduser('~') + '/FSA/data/FeaturesByYear/features%d.csv' % i, index = False)
         
