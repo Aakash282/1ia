@@ -12,6 +12,8 @@ from joblib import Parallel, delayed
 import time
 import loadData as load
 
+
+mean = {}
 for year in range(2001, 2015):
     features = load.getFeatures(year)
     for location in ['away ', 'home ', 'away opp_', 'home opp_']:
@@ -28,12 +30,18 @@ for year in range(2001, 2015):
     temp = features['home score'] - features['away score'] == features['score diff']    
     if len(set(temp)) != 1:
         print len(set(temp))
+    feature_list = [str(x) for x in features.keys()]    
+    for elem in feature_list:
+        if elem not in mean.keys():
+            mean[elem] = np.array([])
+        mean[elem] = np.append( mean[elem], (features[elem].values).mean())
+        
+min_ind = {}
+for elem in mean.keys():
+    if np.argmin(mean[elem]) not in min_ind.keys():
+        min_ind[np.argmin(mean[elem])] = 0
+    min_ind[np.argmin(mean[elem])] += 1
 
-'''        
-attempted > converted
-1st > 3rd
-fumbles > fumbles_lost
-'''
-
+plt.plot(min_ind.values())
 
 
