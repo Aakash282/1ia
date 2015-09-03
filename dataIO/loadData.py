@@ -23,3 +23,9 @@ def getTeamData(year, team):
 def getYearData(year):
     path = os.path.expanduser('~') + '/FSA/data/NFLstatsbyyear/NFL0114_TeamStats_raw%d.csv' %year
     return pd.DataFrame.from_csv(path)
+
+def getFeatures(year):
+    datadir = os.path.expanduser('~') + "/FSA/data/NNinput/"
+    yearDataPath = datadir + "features%d.csv" % year
+    return pd.read_csv(yearDataPath, index_col = False)
+    

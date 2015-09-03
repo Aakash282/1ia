@@ -42,7 +42,8 @@ class game:
         function simply makes calls to other feature computing functions'''
         features = {}
         feature_list = list(self.season[self.home].keys())
-        remove_list = feature_list[0:7] + ['attendance', 'home_field?', 'Surface']
+        #remove_list = feature_list[0:7] + ['attendance', 'home_field?', 'Surface']
+        remove_list = []
         for elem in feature_list:
             if 'ref' in elem or 'score' in elem:
                 remove_list.append(elem)

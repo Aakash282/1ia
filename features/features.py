@@ -1,30 +1,28 @@
 import os
 import sys
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 sys.path.append(os.path.expanduser('~') + '/FSA/1ia/dataIO/' )
 sys.path.append(os.path.expanduser('~') + '/FSA/1ia/lib/' )
 import tableFns as TFns
 import loadData as load
-import loadRaw as ld
 import game
 import multiprocessing 
 from joblib import Parallel, delayed
-
-global season_table
-season_table = {}
-
+import time
 
 def get_feature_set(start, stop):
     '''parallelized version of feature_set'''
+    start_time = time.clock()
     # the -1 is because I like to use my computer while running things
     num_cores = min((stop - start), multiprocessing.cpu_count() - 1)
     # to ensure that at least one core is being used
     num_cores = max(num_cores, 1)
     Parallel(n_jobs = num_cores)(delayed(feature_set)(x, x) for x in range(start, stop))
-
+    print 'Ellapsed time', time.clock() - start_time, 'Using %i core(s)' %num_cores
+    
 def feature_set(start, stop):
+    season_table = {}
     for i in range(start, stop+1):
         season_table[i] = load.loadYear(i)
         df = pd.DataFrame()
@@ -52,5 +50,5 @@ def feature_set(start, stop):
             output.columns = columns
             df = pd.DataFrame.append(df, output)
             #print output.values
-        df.to_csv(ld.getPath() + '/data/NNinput/features%d.csv' % i, index = False)
+        df.to_csv(os.path.expanduser('~') + '/FSA/data/NNinput/features%d.csv' % i, index = False)
         
