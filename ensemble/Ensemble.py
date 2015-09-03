@@ -3,6 +3,9 @@
 from models.sk_RF import sk_RF
 from models.sk_GBR import sk_GBR
 from models.sk_SVM import sk_SVM
+
+from models.h2o_RF import h2o_RF
+
 import simpleBlend as blender
 import validate as val
 
@@ -25,9 +28,11 @@ class Ensemble:
 		self.models.append(sk_GBR(self.numModels, params))
 		self.numModels += 1
 
-	def addSVM(self, params):
+	def addSKSVM(self, params):
 		self.models.append(sk_SVM(self.numModels, params))
 		self.numModels += 1
+
+	# def addh2oRF(self, params)
 
 	def train(self, x, y):
 		print "###########################"

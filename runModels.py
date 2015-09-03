@@ -9,7 +9,7 @@ import os
 
 
 def importData(training=1):
-    datadir = os.getcwd().strip('1ia') + 'data/NNinput/'
+    datadir = os.getcwd().strip('1ia') + 'data/TrainTest/'
     if training: 
         return pd.DataFrame.from_csv(datadir + 'training_set.csv')
     else: 
@@ -46,6 +46,9 @@ if __name__ == "__main__":
 
     # add a SK Gradient Boosted Machine
     ens.addSKGBR([100, .07])
+
+    # add a SK SVM 
+    ens.addSKSVM([])
 
     # train all models
     ens.train(x_train, y_train)
