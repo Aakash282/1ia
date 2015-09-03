@@ -10,7 +10,7 @@ import loadData as load
 class game:
     '''The idea behind this class is to be able to make a prediction for a 
     possible game that may occur in the future'''
-    def __init__(self, home_team, away_team, season, week_year, roof, time):
+    def __init__(self, home_team, away_team, season, DVOA, week_year, roof, time):
         self.home = home_team.strip()
         self.away = away_team.strip()
         if len(week_year) > 2:
@@ -19,9 +19,10 @@ class game:
         else:
             print 'improper time field format!'
 
+        self.season = season
         self.roof = roof
         self.time = time
-        self.season = season
+        self.DVOA = DVOA
 
     def get_stats(self, n):
         home_table = load.getTeamData(self.year, self.home)
@@ -51,13 +52,36 @@ class game:
         for elem in feature_list:
             elem = elem.strip()
             features[elem] = self.get_feature(elem, home, n)
-
+        DVOA_columns = self.DVOA.keys()
+        # the first 3 columns are wkk, year, and team, and so are removed
+        for elem in DVOA_columns[3:]:
+            features['DVOA' + elem] = self.getDVOA(elem, home, n)
+        
         features['score'] = self.score(home)
         win_loss = self.winLoss(home)
         features['wins'], features['losses']  = win_loss['wins'], win_loss['losses']
         features['streak'] = win_loss['streak']
         return features
+    
 
+    def getDVOA(self, feature, home, n):
+        ''' gets DVOA stats'''
+        if home:
+            team = self.home
+        else:
+            team = self.away
+        DVOA_table = TFns.filter_table(self.DVOA, 'team', team)
+        prev = []
+        for idx, w in DVOA_table.iterrows():
+            if np.mean(w['week']) < self.week:
+                prev.append(w[feature])
+            else: 
+                if len(prev) > n:
+                    return np.mean(prev[-n:])
+                else: 
+                    return None 
+
+        
     def compute_game_features(self, n):
         features = {}
         features['spread'] = self.spread()

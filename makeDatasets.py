@@ -13,10 +13,12 @@ dir_prefix = os.path.expanduser('~') + "/FSA/data/"
 inpath = "FeaturesByYear/"
 outpath = "TrainTest/"
 training_set = []
-train_years = range(2001, 2014)
+train_years = range(2001, 2013)
+'''
 train_years.remove(2006)
 train_years.remove(2007)
 train_years.remove(2008)
+'''
 for i in train_years:
 	training_set.append(pd.DataFrame.from_csv(dir_prefix + inpath + "features%d.csv" % i))
 
