@@ -3,16 +3,9 @@
 # functions to blend and validate the predictions. 
 # Only run this after running makeDatasets.py
 
-import ensemble.validate as val 
-import ensemble.simpleBlend as blender
+from ensemble.Ensemble import Ensemble
 import pandas as pd 
-from matplotlib import pyplot as plt 
-import numpy as np 
 import os
-import ensemble.models.RF as RF
-import ensemble.models.GBR as GBR
-import ensemble.models.SVM as SVM
-from sklearn import ensemble
 
 
 def importData(training=1):
@@ -33,9 +26,9 @@ if __name__ == "__main__":
 
     holdout = ['score diff', 'home score', 'away score']
     if not spread: 
-        print 'hi'
         holdout.append('spread')
 
+    # Load the datasets into memory to hand of to the models
     feature_cols = [col for col in df_train.columns if col not in holdout]
     test_cols = [col for col in df_train.columns if col in ['score diff']]
     x_train = df_train[feature_cols]
@@ -45,21 +38,25 @@ if __name__ == "__main__":
     y_test = df_test[test_cols]
     test_spread = df_test[['spread']]
 
-    models = [RF.trainModel(10, x_train, y_train) for i in range(10)]
-    models += [GBR.trainModel(100, .1, x_train, y_train) for i in range(10)]
-    models += [SVM.trainModel(x_train, y_train)]
+    # create an ensemble to start adding models
+    ens = Ensemble()
 
-    trainPreds = [m.predict(x_train) for m in models]
-    testPreds = [m.predict(x_test) for m in models]
+    # add a SK Random Forests
+    ens.addSKRF([100])
 
+    # add a SK Gradient Boosted Machine
+    ens.addSKGBR([100, .07])
 
-    trainPreds = blender.blend(trainPreds)
-    testPreds = blender.blend(testPreds)
+    # train all models
+    ens.train(x_train, y_train)
 
-    val.trainError(trainPreds, y_train, train_spread)
-    val.plotHist(trainPreds, y_train, train_spread)
-    print '#################################'
-    val.testError(testPreds, y_test, test_spread)
-    val.plotHist(testPreds, y_test, test_spread)
-    
+    # find training error
+    ens.predict(x_train)
+    ens.blend()
+    ens.validate(y_train, train_spread, False)
+
+    # predict on test set and compute error report
+    ens.predict(x_test)
+    ens.blend()
+    ens.validate(y_test, test_spread, True)
 

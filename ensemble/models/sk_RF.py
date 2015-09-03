@@ -1,0 +1,17 @@
+# sk_RF.py 
+
+from Model import Model
+from sklearn import ensemble
+
+class sk_RF(Model):
+	'''inherits Model class and implements sklearns RandomForestRegressor class'''
+	def __init__(self, ID, params):
+		Model.__init__(self, ID, params)
+		self.n_est = params[0]
+		self.model = ensemble.RandomForestRegressor(n_estimators=self.n_est)
+
+	def train(self, x, y):
+		self.model.fit(x, y)
+
+	def predict(self, x):
+		return self.model.predict(x)

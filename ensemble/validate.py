@@ -1,14 +1,9 @@
 import pandas as pd
-from sklearn import ensemble
-from sklearn import dummy as dum
-import sklearn.tree as sk
 from sklearn import metrics
 import numpy as np
 from matplotlib import pyplot as plt
-from NN import bpnn
 import math
 import os
-from sklearn import svm
 
 eps = 0
 
@@ -136,6 +131,7 @@ def trainError(y_pred, y_train, train_spread):
     print "actual\t\taway\thome+"
     print "predicted away\t%d\t%d" % (conf[0], conf[1])
     print "predicted home+\t%d\t%d" % (conf[2], conf[3])
+    print "###########################"
 
 def testError(y_pred, y_test, test_spread):
     y_test = y_test.values.T.tolist()[0]
@@ -152,6 +148,7 @@ def testError(y_pred, y_test, test_spread):
     print "actual\t\taway\thome"
     print "predicted away\t%d\t%d" % (conf[0], conf[1])
     print "predicted home\t%d\t%d" % (conf[2], conf[3])
+    print "###########################"
 
 def plotHist(l1, l2, l3):
     l2 = l2.values.T.tolist()[0]
@@ -161,6 +158,6 @@ def plotHist(l1, l2, l3):
     plt.xlabel("Prediction")
     plt.ylabel("Prediction Frequency")
     plt.hist(l1, 100, normed=True, color='b')
-    plt.hist(l2, 100, normed=True, color='g')
+    plt.hist(l2, 200, normed=True, color='g')
     plt.hist(l3, 100, normed=True, color='r')
     plt.show()
