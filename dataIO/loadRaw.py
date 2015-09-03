@@ -5,51 +5,59 @@ import pandas as pd
 import os 
 
 def getPath():
-    ospath = os.getcwd().split('/')
-    ospath = '/' + ospath[1] + '/' + ospath[2] + '/' + ospath[3]
-    return ospath
+    '''Returns path to base directory'''
+    base_dir = os.getcwd().split('/')
+    base_dir = '/' + base_dir[1] + '/' + base_dir[2] + '/' + base_dir[3]
+    return base_dir
 
 def parse():
-    ospath = getPath()
-    datadir = ospath + '/data/'
+    '''Reads in yearly raw data and generates aggregate NFL0114_TeamStats_raw.csv'''
+    # Note: Not actually sure that this function is ever called
+    base_dir = getPath()
+    data_dir = base_dir + '/data/'
 
-    p = pd.read_csv(datadir + "headers.csv", sep = ";")
-    for y in range(2001, 2015):
-        print y
-        lst_temp = pd.read_csv(datadir + "rawdata/rawdata%d" % y, sep=";")
-        for line in range(len(lst_temp['week'])):
-            lst_temp['week'][line] = str(lst_temp['week'][line]) + " %d" %y
+    # aggregate_data is where every year's data is added
+    aggregate_data = pd.read_csv(data_dir + "headers.csv", sep = ";")
+    for year in range(2001, 2015):
+        print year
+        year_data = pd.read_csv(data_dir + "rawdata/rawdata%d" % year, sep=";")
+        for line in range(len(year_data['week'])):
+            year_data['week'][line] = str(year_data['week'][line]) + " %d" %year
           
-        p = pd.merge(p, lst_temp, how = 'outer')
-    columns = list(p.keys())
+        aggregate_data = pd.merge(aggregate_data, year_data, how = 'outer')
+    columns = list(aggregate_data.keys())
     columns[0] = 'week year'
-    p.columns = columns
-    p.to_csv(datadir + "NFL0114_TeamStats_raw.csv")
+    aggregate_data.columns = columns
+    aggregate_data.to_csv(data_dir + "NFL0114_TeamStats_raw.csv")
 
 def parseYear():
-    ospath = getPath()
-    datadir = ospath + '/data/'
+    ''' Reads in yearly raw data and generates csv for each year
+        Ideally should be combined with parse() so that either parse calls
+        parseYear or parseYear() is eliminated completely'''
+    # Note: Not actually sure that this function is ever called either
+    base_dir = getPath()
+    data_dir = base_dir + '/data/'
 
-    for y in range(2001, 2015):
-        print y
-        p = pd.read_csv(datadir + "headers.csv", sep = ";")
-        lst_temp = pd.read_csv(datadir + "rawdata/rawdata%d" % y, sep=";")
-        p = pd.merge(p, lst_temp, how = 'outer')
-        columns = list(p.keys())
+    for year in range(2001, 2015):
+        print year
+        aggregate_data = pd.read_csv(data_dir + "headers.csv", sep = ";")
+        year_data = pd.read_csv(data_dir + "rawdata/rawdata%d" % year, sep=";")
+        aggregate_data = pd.merge(aggregate_data, year_data, how = 'outer')
+        columns = list(aggregate_data.keys())
         columns[0] = 'week year'
-        p.columns = columns
-        p.to_csv(datadir + "NFL0114_TeamStats_raw%d.csv" %y)
+        aggregate_data.columns = columns
+        aggregate_data.to_csv(data_dir + "NFL0114_TeamStats_raw%d.csv" %year)
         
 def getDataset():
-    ospath = getPath()
-    return pd.DataFrame.from_csv(ospath + "/data/NFL0114_TeamStats_raw.csv")
+    base_dir = getPath()
+    return pd.DataFrame.from_csv(base_dir + "/data/NFL0114_TeamStats_raw.csv")
 
 def getTeamData(year, team):
-    ospath = getPath()
-    path = ospath + '/data/teamdatabyyear/teamdata%d/%s.csv' %(year,team)
+    base_dir = getPath()
+    path = base_dir + '/data/teamdatabyyear/teamdata%d/%s.csv' %(year,team)
     return pd.DataFrame.from_csv(path)
 
 def getYearData(year):
-    ospath = getPath()
-    path = ospath + '/data/NFLstatsbyyear/NFL0114_TeamStats_raw%d.csv' %year
+    base_dir = getPath()
+    path = base_dir + '/data/NFLstatsbyyear/NFL0114_TeamStats_raw%d.csv' %year
     return pd.DataFrame.from_csv(path)
