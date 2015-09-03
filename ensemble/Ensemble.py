@@ -32,7 +32,9 @@ class Ensemble:
 		self.models.append(sk_SVM(self.numModels, params))
 		self.numModels += 1
 
-	# def addh2oRF(self, params)
+	def addh2oRF(self, params):
+		self.models.append(h2o_RF(self.numModels, params))
+		self.numModels += 1
 
 	def train(self, x, y):
 		print "###########################"
@@ -44,9 +46,9 @@ class Ensemble:
 		self.preds = []
 		print "###########################"
 
-	def predict(self, x):
+	def predict(self, x, train=True):
 		# clear out the current predictions and predict from each model
-		self.preds = [m.predict(x) for m in self.models]
+		self.preds = [m.predict(x, train) for m in self.models]
 
 	def blend(self):
 		# blend all results in self.preds together

@@ -12,5 +12,5 @@ class sk_SVM(Model):
 	def train(self, x, y):
 		self.model.fit(x, y)
 
-	def predict(self, x):
+	def predict(self, x, train):
 		return self.model.predict(x)

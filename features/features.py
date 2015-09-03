@@ -51,6 +51,6 @@ def feature_set(start, stop):
                 ['home ' + x for x in temp_features['away']] + ['score diff', 'spread', 'roof', 'timeofgame']
             output.columns = columns
             df = pd.DataFrame.append(df, output)
-            #print output.values
+            # print output.values
         df.to_csv(os.path.expanduser('~') + '/FSA/data/FeaturesByYear/features%d.csv' % i, index = False)
         

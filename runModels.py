@@ -38,28 +38,33 @@ if __name__ == "__main__":
     y_test = df_test[test_cols]
     test_spread = df_test[['spread']]
 
+    # print list(df_train.columns)
+
     # create an ensemble to start adding models
     ens = Ensemble()
 
     # add a SK Random Forests
-    ens.addSKRF([100])
+    # ens.addSKRF([100])
 
     # add a SK Gradient Boosted Machine
-    ens.addSKGBR([100, .07])
+    # ens.addSKGBR([100, .07])
 
     # add a SK SVM 
-    ens.addSKSVM([])
+    # ens.addSKSVM([])
+
+    # add an h2o RF
+    ens.addh2oRF([False, 500, 100, 20])
 
     # train all models
     ens.train(x_train, y_train)
 
     # find training error
-    ens.predict(x_train)
+    ens.predict(x_train, train=True)
     ens.blend()
     ens.validate(y_train, train_spread, False)
 
     # predict on test set and compute error report
-    ens.predict(x_test)
+    ens.predict(x_test, train=False)
     ens.blend()
     ens.validate(y_test, test_spread, True)
 
