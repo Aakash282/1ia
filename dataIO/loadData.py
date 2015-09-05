@@ -26,7 +26,7 @@ def getYearData(year):
     return pd.DataFrame.from_csv(path)
 
 def getFeatures(year):
-    datadir = os.path.expanduser('~') + "/FSA/data/NNinput/"
+    datadir = os.path.expanduser('~') + "/FSA/data/FeaturesByYear/"
     yearDataPath = datadir + "features%d.csv" % year
     return pd.read_csv(yearDataPath, index_col = False)
 
