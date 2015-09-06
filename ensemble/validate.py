@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 import math
 import os
 
-eps = 0
+eps = 2
 
 ########################################################
 # FOR ALL OF THE BELOW FUNCTIONS                       #

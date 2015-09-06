@@ -10,15 +10,18 @@ sys.path.append(os.path.expanduser('~') + '/FSA/1ia/lib/' )
 import loadData as load
 import time
 import random as rand
-fakeSets = 10
+fakeSets = 100
 
 features = pd.DataFrame()
 for year in range(2001, 2015):
+    print year
     features = load.getFeatures(year)
     combinedOutput = pd.DataFrame()
     for elem in range(fakeSets):
         tempTable = features
-        for key in tempTable.keys():
+        featureList = list(tempTable.keys())
+        featureList.remove('spread')
+        for key in featureList:
             # The noise is added in here
             tempTable[key] *= 1 + (rand.random() - 0.5) / 5.0
         combinedOutput = pd.DataFrame.append(combinedOutput, tempTable)

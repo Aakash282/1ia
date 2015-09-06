@@ -11,7 +11,8 @@ import os
 
 
 def importData(training=1):
-    datadir = os.getcwd().strip('1ia') + 'data/TrainTest/'
+    # Change the data dir if pulling from the normal set
+    datadir = os.getcwd().strip('1ia') + 'data/TrainTestSynth/'
     if training: 
         return pd.DataFrame.from_csv(datadir + 'training_set.csv')
     else: 
@@ -46,16 +47,16 @@ if __name__ == "__main__":
     ens = Ensemble()
 
     # add a SK Random Forests
-    #ens.addSKRF([100])
+    ens.addSKRF([100])
 
     # add a SK Gradient Boosted Machine
-    #ens.addSKGBR([100, .07])
+    ens.addSKGBR([100, .07])
 
     # add a SK SVM 
-    #ens.addSKSVM([])
+    ens.addSKSVM([])
 
     # add an h2o RF
-    ens.addh2oRF([False, 500, 100, 20])
+    #ens.addh2oRF([False, 500, 100, 20])
 
     # train all models
     ens.train(x_train, y_train)
@@ -69,8 +70,6 @@ if __name__ == "__main__":
     ens.predict(x_test, train=False)
     b = ens.blend()
     ens.validate(y_test, test_spread, True)
-    
-    
     
     density = gaussian_kde(a)
     xs = np.linspace(-20, 20, 200)
