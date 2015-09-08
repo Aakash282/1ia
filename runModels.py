@@ -56,7 +56,10 @@ if __name__ == "__main__":
     ens.addSKSVM([])
 
     # add an h2o RF
-    #ens.addh2oRF([False, 500, 100, 20])
+    #ens.addh2oRF([True, 500, 100, 0])
+
+    # add an h2o DL Network
+    # ens.addh2oDL([True, [150, 150], 300, 0])
 
     # train all models
     ens.train(x_train, y_train)
