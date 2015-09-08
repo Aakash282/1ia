@@ -13,29 +13,28 @@ class h2o_DL(Model):
 		Model.__init__(self, ID, params)
 		h2o.init()
 
-		datadir = os.path.expanduser('~') +'/FSA/data/TrainTest/'
-		trainingFile = datadir + 'training_set.csv'
-		valFile = datadir + 'val_set.csv'
-		testingFile = datadir + 'testing_set.csv'
+		datadir = os.path.expanduser('~') +'/FSA/data/'
+		trainingFile = datadir + params[1][0]
+		valFile = datadir + params[1][1]
+		testingFile = datadir + params[1][2]
 
 
 		self.trainData = h2o.import_frame(path=trainingFile)
-		self.testData = h2o.import_frame(path=testingFile)
 		self.valData = h2o.import_frame(path=valFile)
+		self.testData = h2o.import_frame(path=testingFile)
 
 		# print self.trainData.col_names()
 		# drop the invalid columns
 		self.trainData = self.trainData.drop("away score").drop("home score")
-		self.testData = self.testData.drop("away score").drop("home score")
 		self.valData = self.valData.drop("away score").drop("home score")
-
+		self.testData = self.testData.drop("away score").drop("home score")
 
 		self.params = params
 
 		if self.params[0] == False: 
 			self.trainData = self.trainData.drop('spread')
-			self.testData  = self.testData.drop('spread')
 			self.valData   = self.valData.drop('spread')
+			self.testData  = self.testData.drop('spread')
 
 		# for h2o, creating the model is the same as training the model so 
 		# need to hold of here
@@ -46,9 +45,9 @@ class h2o_DL(Model):
 			                           y = self.trainData['score diff'],
 			                           validation_x = self.valData.drop('score diff'),
 			                           validation_y = self.valData['score diff'],
-			                           hidden=self.params[1],
-			                           epochs=self.params[2],
-			                           nfolds=self.params[3])
+			                           hidden=self.params[2],
+			                           epochs=self.params[3],
+			                           nfolds=self.params[4])
 
 	def predict(self, x, train):
 		# check if the input data is training or testing

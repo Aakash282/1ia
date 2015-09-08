@@ -10,21 +10,23 @@ sys.path.append(os.path.expanduser('~') + '/FSA/1ia/lib/' )
 import loadData as load
 import time
 import random as rand
-fakeSets = 100
 
-features = pd.DataFrame()
-for year in range(2001, 2015):
-    print year
-    features = load.getFeatures(year)
-    combinedOutput = pd.DataFrame()
-    for elem in range(fakeSets):
-        tempTable = features
-        featureList = list(tempTable.keys())
-        featureList.remove('spread')
-        for key in featureList:
-            # The noise is added in here
-            tempTable[key] *= 1 + (rand.random() - 0.5) / 5.0
-        combinedOutput = pd.DataFrame.append(combinedOutput, tempTable)
-    combinedOutput = pd.DataFrame.append(combinedOutput, features)
-    combinedOutput.to_csv(os.path.expanduser('~') + \
-            '/FSA/data/FeaturesSynth/featuresSynth%d.csv' % year, index = False)
+
+def synth(n):
+    fakeSets = n
+    features = pd.DataFrame()
+    for year in range(2001, 2015):
+        print year
+        features = load.getFeatures(year)
+        combinedOutput = pd.DataFrame()
+        for elem in range(fakeSets):
+            tempTable = features
+            featureList = list(tempTable.keys())
+            featureList.remove('spread')
+            for key in featureList:
+                # The noise is added in here
+                tempTable[key] *= 1 + (rand.random() - 0.5) / 5.0
+            combinedOutput = pd.DataFrame.append(combinedOutput, tempTable)
+        combinedOutput = pd.DataFrame.append(combinedOutput, features)
+        combinedOutput.to_csv(os.path.expanduser('~') + \
+                '/FSA/data/FeaturesSynth/featuresSynth%d.csv' % year, index = False)

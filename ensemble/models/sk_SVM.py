@@ -7,7 +7,7 @@ class sk_SVM(Model):
 	'''inherits Model class and implements sklearns SVM class'''
 	def __init__(self, ID, params):
 		Model.__init__(self, ID, params)
-		self.model = SVR(kernel='rbf')
+		self.model = SVR(kernel='rbf', verbose=True)
 
 	def train(self, x, y):
 		self.model.fit(x, y)

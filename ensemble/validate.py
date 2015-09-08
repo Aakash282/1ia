@@ -59,6 +59,7 @@ def falseNegative(l1, l2, l3):
 def falsePositive(l1, l2, l3):
     if len(l1) != len(l2):
         print 'prediction list wrong size'
+        print len(l1), len(l2), len(l3)
         exit()
     else: 
         err_count = 0

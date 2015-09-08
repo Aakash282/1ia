@@ -8,7 +8,7 @@ class sk_RF(Model):
 	def __init__(self, ID, params):
 		Model.__init__(self, ID, params)
 		self.n_est = params[0]
-		self.model = ensemble.RandomForestRegressor(n_estimators=self.n_est)
+		self.model = ensemble.RandomForestRegressor(n_estimators=self.n_est, verbose=1)
 
 	def train(self, x, y):
 		self.model.fit(x, y)

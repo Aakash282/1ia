@@ -22,6 +22,7 @@ if __name__ == "__main__":
     df_train = importData()
     df_test = importData(0)
 
+    files = ('TrainTestSynth/training_set.csv', 'TrainTestSynth/val_set.csv', 'TrainTestSynth/testing_set.csv')
     ######################
     # TRAIN ON SPREAD????#
     ######################
@@ -47,19 +48,19 @@ if __name__ == "__main__":
     ens = Ensemble()
 
     # add a SK Random Forests
-    ens.addSKRF([100])
+    ens.addSKRF([50])
 
     # add a SK Gradient Boosted Machine
-    ens.addSKGBR([100, .07])
+    ens.addSKGBR([200, .07])
 
     # add a SK SVM 
-    ens.addSKSVM([])
+    # ens.addSKSVM([])
 
     # add an h2o RF
-    #ens.addh2oRF([True, 500, 100, 0])
+    # ens.addh2oRF([True, files, 200, 100, 0])
 
     # add an h2o DL Network
-    # ens.addh2oDL([True, [150, 150], 300, 0])
+    # ens.addh2oDL([True, files, [150, 150], 300, 0])
 
     # train all models
     ens.train(x_train, y_train)
