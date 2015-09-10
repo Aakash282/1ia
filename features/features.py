@@ -33,6 +33,7 @@ def feature_set(start, stop):
             temp_game = game.game(row['home_team'], row['away_team'], season_table[i],\
                              DVOA_table, str(row['week year']) + ' ' + str(i), \
                              row['Roof'], row['time_of_day_(ET)'])
+            
             # Adjust this to change the length of the moving average #FuckMagicNumbers #GlenGeorgeRuinedMe
             movingAvgLength = 3
             temp_features = temp_game.get_features(movingAvgLength)

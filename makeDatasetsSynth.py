@@ -16,9 +16,9 @@ dir_prefix = os.path.expanduser('~') + "/FSA/data/"
 inpath = "FeaturesSynth/"
 testInPath = 'FeaturesByYear/'
 outpath = "TrainTestSynth/"
-train_years = range(2001, 2010)
-val_years = range(2010, 2012)
-test_years = range(2012, 2015)
+train_years = range(2001, 2013)
+val_years = range(2011, 2013)
+test_years = range(2013, 2014)
 
 # exclude years
 '''

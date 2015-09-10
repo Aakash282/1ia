@@ -21,6 +21,7 @@ class h2o_DL(Model):
 
 		self.trainData = h2o.import_frame(path=trainingFile)
 		self.valData = h2o.import_frame(path=valFile)
+		self.valData = self.trainData
 		self.testData = h2o.import_frame(path=testingFile)
 
 		# print self.trainData.col_names()

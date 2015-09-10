@@ -26,7 +26,7 @@ if __name__ == "__main__":
     ######################
     # TRAIN ON SPREAD????#
     ######################
-    spread = True
+    spread = False
 
     holdout = ['score diff', 'home score', 'away score']
     if not spread: 
@@ -51,16 +51,16 @@ if __name__ == "__main__":
     ens.addSKRF([50])
 
     # add a SK Gradient Boosted Machine
-    ens.addSKGBR([200, .07])
+    ens.addSKGBR([100, .07])
 
     # add a SK SVM 
     # ens.addSKSVM([])
 
     # add an h2o RF
-    # ens.addh2oRF([True, files, 200, 100, 0])
+    ens.addh2oRF([True, files, 100, 100, 0])
 
     # add an h2o DL Network
-    # ens.addh2oDL([True, files, [150, 150], 300, 0])
+    ens.addh2oDL([True, files, [150, 100], 150, 0])
 
     # train all models
     ens.train(x_train, y_train)

@@ -33,7 +33,8 @@ class h2o_RF(Model):
 
 		if self.params[0] == False: 
 			self.trainData = self.trainData.drop('spread')
-			self.valData   = self.valData.drop('spread')
+			# self.valData   = self.valData.drop('spread')
+			self.valData = self.trainData
 			self.testData  = self.testData.drop('spread')
 
 		# for h2o, creating the model is the same as training the model so 
