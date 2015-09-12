@@ -9,7 +9,7 @@ import tableFns as TFns
 datadir = os.path.expanduser('~') + '/FSA/data/'
 pages = datadir + 'DVOApages/'
 f = open(datadir + 'DVOA.csv', 'w')
-header = 'year,week,team,total_dvoa,off_dvoa,def_dvoa,st_dvoa\n'
+header = 'year,week,team,record,total_dvoa,total_dvoa_rank,weighted_dvoa,weighted_dvoa_rank,off_dvoa,off_dvoa_rank,weighted_off_dvoa,weighted_off_dvoa_rank,def_dvoa,def_dvoa_rank,weighted_def_dvoa,weighted_def_dvoa_rank,st_dvoa,st_dvoa_rank,weighted_st_dvoa,weighted_st_dvoa_rank\n'
 f.write(header)
 for y in range(2001, 2015):
     for w in range(1, 18): 
@@ -17,9 +17,9 @@ for y in range(2001, 2015):
             only_tables = SoupStrainer('table')
             soup = BeautifulSoup(g,parse_only=only_tables)
             data = soup.find_all('td')
-            numTeams = len(data) / 6
+            numTeams = len(data) / 18
             for i in range(numTeams):
-                teamData = [str(y)] + [str(w)] + [data[x].text.strip('%') for x in range(i*6, i*6+5)]
+                teamData = [str(y)] + [str(w)] + [data[x].text.strip('%') for x in range(i*18, i*18+17)]
                 line = ','.join(teamData)
                 f.write(line + '\n')
 f.close()
