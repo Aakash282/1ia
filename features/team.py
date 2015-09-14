@@ -9,9 +9,15 @@ import loadData as load
 
 class team:
 	'''This class is use for computing 1 season of features for a team'''
-	def __init__(self, season):
-		self.season = season
-		self.cols = season.columns
+	def __init__(self, season, DVOA):
+		DVOA = DVOA.reset_index()
+
+		# self.season = season
+		season = season.reset_index()
+		DVOA = DVOA.reset_index()
+		self.season = pd.concat([season,DVOA],axis=1)
+		self.cols = season.columns + DVOA.columns[3:]
+		self.season = self.season.drop(['index', 'level_0'], axis=1)
 
 	def computeFeatures(self, n):
 		'''compute all features for this team's season'''
