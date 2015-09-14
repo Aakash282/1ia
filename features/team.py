@@ -11,8 +11,6 @@ class team:
 	'''This class is use for computing 1 season of features for a team'''
 	def __init__(self, season, DVOA):
 		DVOA = DVOA.reset_index()
-
-		# self.season = season
 		season = season.reset_index()
 		DVOA = DVOA.reset_index()
 		self.season = pd.concat([season,DVOA],axis=1)

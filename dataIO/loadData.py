@@ -17,6 +17,10 @@ def loadYear(year):
         season[team_name] = temp_stor.sort(['week year'], ascending=[1]).reset_index(drop=True)
     return season
 
+def getTeamFeatures(year, team):
+    path = os.path.expanduser('~') + '/FSA/data/teamfeaturesbyyear/features%d/%s.csv' %(year,team)
+    return pd.DataFrame.from_csv(path)
+
 def getTeamData(year, team):
     path = os.path.expanduser('~') + '/FSA/data/teamdatabyyear/teamdata%d/%s.csv' %(year,team)
     return pd.DataFrame.from_csv(path)

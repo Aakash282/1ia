@@ -20,7 +20,15 @@ def get_feature_set(start, stop):
     num_cores = max(num_cores, 1)
     Parallel(n_jobs = num_cores)(delayed(feature_set)(x, x) for x in range(start, stop + 1))
     print 'Ellapsed time', time.clock() - start_time, 'Using %i core(s)' %num_cores
-    
+
+def extractFeatures(team, week, year):
+    try:
+        year_features = load.getTeamFeatures(year, team)
+        features = year_features.loc[week]   
+        return features
+    except:
+        return {}
+
 def feature_set(start, stop):
     season_table = {}
     DVOA = load.getDVOA()
@@ -29,9 +37,11 @@ def feature_set(start, stop):
         df = pd.DataFrame()
         league_data = load.getYearData(i)
         for idx, row in league_data.iterrows():
-            DVOA_table = TFns.filter_table(DVOA, 'year', i)
+            week_year = str(row['week year'])
+            home_features = extractFeatures(row['home_team'].strip(), week_year, i)
+            away_features = extractFeatures(row['away_team'].strip(), week_year, i)
             temp_game = game.game(row['home_team'], row['away_team'], season_table[i],\
-                             DVOA_table, str(row['week year']) + ' ' + str(i), \
+                             home_features, away_features, week_year + ' ' + str(i), \
                              row['Roof'], row['time_of_day_(ET)'])
             
             # Adjust this to change the length of the moving average #FuckMagicNumbers #GlenGeorgeRuinedMe

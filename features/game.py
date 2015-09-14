@@ -10,7 +10,7 @@ import loadData as load
 class game:
     '''The idea behind this class is to be able to make a prediction for a 
     possible game that may occur in the future'''
-    def __init__(self, home_team, away_team, season, DVOA, week_year, roof, time):
+    def __init__(self, home_team, away_team, season, home_features, away_features, week_year, roof, time):
         self.home = home_team.strip()
         self.away = away_team.strip()
         if len(week_year) > 2:
@@ -19,10 +19,11 @@ class game:
         else:
             print 'improper time field format!'
 
+        self.home_features = home_features
+        self.away_features = away_features
         self.season = season
         self.roof = roof
         self.time = time
-        self.DVOA = DVOA
 
     def get_stats(self, n):
         home_table = load.getTeamData(self.year, self.home)
@@ -41,22 +42,10 @@ class game:
     def compute_features(self, home, n):
         '''input is a boolean for whether computing feature for home team. This 
         function simply makes calls to other feature computing functions'''
-        features = {}
-        feature_list = list(self.season[self.home].keys())
-        remove_list = feature_list[0:7] + ['attendance', 'home_field?', 'Surface']
-        for elem in feature_list:
-            if 'ref' in elem or 'score' in elem:
-                remove_list.append(elem)
-        for elem in remove_list:
-            feature_list.remove(elem)
-        for elem in feature_list:
-            elem = elem.strip()
-            features[elem] = self.get_feature(elem, home, n)
-        DVOA_columns = self.DVOA.keys()
-        # the first 3 columns are wkk, year, and team, and so are removed
-        for elem in DVOA_columns[3:]:
-            features['DVOA' + elem] = self.getDVOA(elem, home, n)
-        
+        if home:
+            features = self.home_features
+        else:
+            features = self.away_features
         features['score'] = self.score(home)
         win_loss = self.winLoss(home)
         features['wins'], features['losses']  = win_loss['wins'], win_loss['losses']
