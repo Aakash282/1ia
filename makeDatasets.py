@@ -6,7 +6,7 @@ from features import features
 from features import features
 
 
-features.get_feature_set(2014, 2014)
+features.get_feature_set(2001, 2014)
 
 # Load in the data
 dir_prefix = os.path.expanduser('~') + "/FSA/data/"

@@ -24,10 +24,10 @@ def get_feature_set(start, stop):
 def extractFeatures(team, week, year):
     try:
         year_features = load.getTeamFeatures(year, team)
-        features = year_features.loc[week]   
+        features = year_features.loc[float(week)].to_dict()
         return features
     except:
-        return {}
+        return {'':None}
 
 def feature_set(start, stop):
     season_table = {}
@@ -40,6 +40,7 @@ def feature_set(start, stop):
             week_year = str(row['week year'])
             home_features = extractFeatures(row['home_team'].strip(), week_year, i)
             away_features = extractFeatures(row['away_team'].strip(), week_year, i)
+
             temp_game = game.game(row['home_team'], row['away_team'], season_table[i],\
                              home_features, away_features, week_year + ' ' + str(i), \
                              row['Roof'], row['time_of_day_(ET)'])
