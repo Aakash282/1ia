@@ -71,3 +71,5 @@ def format_away(away_team):
     out.remove('endance')
     away_team.columns = out
     return away_team
+
+write_teams_year()
