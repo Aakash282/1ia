@@ -1,4 +1,8 @@
 score
+first_score
+second_score
+third_score
+fourth_score
 first_downs
 rush_attempts
 rush_yards
@@ -23,6 +27,10 @@ penalty_yards
 4th_down_attempts
 total_plays
 opp_score
+opp_first_score
+opp_second_score
+opp_third_score
+opp_fourth_score
 opp_first_downs
 opp_rush_attempts
 opp_rush_yards
