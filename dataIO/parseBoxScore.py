@@ -142,7 +142,7 @@ def parseGame(game, week):
     return features
 
 home = os.path.expanduser('~') + "/FSA/data/"
-years = [x for x in range(2010, 2015)]
+years = [x for x in range(2010, 2011)]
 weeks = [x+1 for x in range(17)]
 for y in years:
   with open(home + "rawdata/rawdata" + str(y), 'w') as f:
