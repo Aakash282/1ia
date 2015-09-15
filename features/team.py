@@ -32,53 +32,69 @@ class team:
 
 	def computeComplexFeatures(self, n):
 		'''compute all complex features for this team's season'''
-		season = np.matrix(self.complex_season.values)
-		data = np.empty_like(season[0:season.shape[0]-n])
+		# do not include the last game of the season since we
+		# will NEVER know this information until the season is over
+		season = np.matrix(self.complex_season.values)[:-1]
 
-		for i in range(len(data)):
-			data[i] = season[i + n]
+		# complexFeatures will contain all computed features where
+		# each computed feature is its own row
+		complexFeatures = np.empty(len(season)-(n-1))
 
-		complexFeatures = np.empty(len(data))
-		record_vs_spread = np.empty(len(data))
+		# add a computed feature
+		complexFeatures = computeRecordVsSpread(season, n)
+		return complexFeatures
+
+# This function computes a team's record vs the spread as a fraction
+def computeRecordVsSpread(season, n):
+		record_vs_spread = np.empty(len(season))
+		buf = np.empty(len(season))
 	
-		for i,game in enumerate(data.tolist()):
+		for i,game in enumerate(season.tolist()):
 			this_team = game[0]
 			score_diff = float(game[1]) - float(game[2])
 			spread = game[3].split()
-			result_vs_spread = resultVsSpread(this_team, score_diff, spread)
-			complexFeatures[i] = result_vs_spread
+			record_vs_spread[i] = resultVsSpread(this_team, score_diff, spread)
 
-		for w,record in enumerate(complexFeatures):
-			record_vs_spread[w] = sum(complexFeatures[:w + 1]) / (w + 1)
+		# use buffer to compute sum of records all weeks
+		buf = [sum(record_vs_spread[:i]) for i in range(len(record_vs_spread))][n:]
+		buf.append(sum(record_vs_spread))
+		# now divide by record size (i + n)
+		buf = [buf[i] / (i+n) for i in range(len(buf))]
 		
-		return record_vs_spread
+		# resize and assign correct values
+		record_vs_spread = record_vs_spread[:-(n-1)]
+		for i in range(len(record_vs_spread)):
+			record_vs_spread[i] = buf[i]
 
+		return record_vs_spread
+		
+# this function computes how a team did against a spread for a single game
 def resultVsSpread(this_team, score_diff, spread):
 	'''compute the result vs spread for a given team, score_diff, and spread'''
-		if spread != ['Pick']:
-			spread_team = ''.join(spread[:-1])
-			spread = float(spread[-1])
+	if spread != ['Pick']:
+		spread_team = ''.join(spread[:-1])
+		spread = float(spread[-1])
 
-			# If spread uses this team
-			if spread_team == this_team.replace(' ', ''):
-				# If this_team beat the spread
-				if score_diff + spread > 0:
-					return 1
-				else:
-					return 0
-				
-			# If spread uses opp_team
-			else:
-				# If this_team beat the spread
-				if score_diff - spread > 0:
-					return 1
-				else:
-					return 0
-
-		# If spread is Pick
-		else:
-			# this_team beat the spread
-			if score_diff > 0:
+		# If spread uses this team
+		if spread_team == this_team.replace(' ', ''):
+			# If this_team beat the spread
+			if score_diff + spread > 0:
 				return 1
 			else:
 				return 0
+			
+		# If spread uses opp_team
+		else:
+			# If this_team beat the spread
+			if score_diff - spread > 0:
+				return 1
+			else:
+				return 0
+
+	# If spread is Pick
+	else:
+		# this_team beat the spread
+		if score_diff > 0:
+			return 1
+		else:
+			return 0

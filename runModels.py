@@ -48,19 +48,19 @@ if __name__ == "__main__":
     ens = Ensemble()
 
     # add a SK Random Forests
-    ens.addSKRF([50])
+    # ens.addSKRF([50])
 
     # add a SK Gradient Boosted Machine
-    ens.addSKGBR([100, .07])
+    # ens.addSKGBR([150, .07])
 
     # add a SK SVM 
     # ens.addSKSVM([])
 
     # add an h2o RF
-    ens.addh2oRF([True, files, 100, 100, 0])
+    ens.addh2oRF([True, files, 100, 150, 2])
 
     # add an h2o DL Network
-    ens.addh2oDL([True, files, [150, 100], 150, 0])
+    ens.addh2oDL([True, files, [150, 100], 150, 2])
 
     # train all models
     ens.train(x_train, y_train)
