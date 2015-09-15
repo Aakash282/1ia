@@ -9,20 +9,20 @@ import loadData as load
 
 class team:
 	'''This class is use for computing 1 season of features for a team'''
-	def __init__(self, season, DVOA):
+	def __init__(self, season, DVOA, complex_season):
 		DVOA = DVOA.reset_index()
 		season = season.reset_index()
-		DVOA = DVOA.reset_index()
+		complex_season.reset_index()
 		self.season = pd.concat([season,DVOA],axis=1)
 		self.cols = season.columns + DVOA.columns[3:]
 		self.season = self.season.drop(['index', 'level_0'], axis=1)
+		self.complex_season = pd.concat([complex_season],axis=1)
 
 	def computeFeatures(self, n):
 		'''compute all features for this team's season'''
 		window = np.zeros([n, len(self.cols)])
 		season = np.matrix(self.season.values)[:-1]
 		features = np.empty_like(season[0:season.shape[0]-(n-1)])
-		
 		for i in range(season.shape[0]-(n-1)):
 			window = season[i:i+n]
 			window = window.mean(0)
@@ -30,86 +30,55 @@ class team:
 
 		return features
 
-	def computeRecordVsSpread(self, n, year, this_team, season):
-		'''compute all raw features for this team's season'''
+	def computeComplexFeatures(self, n):
+		'''compute all complex features for this team's season'''
+		season = np.matrix(self.complex_season.values)
+		data = np.empty_like(season[0:season.shape[0]-n])
+
+		for i in range(len(data)):
+			data[i] = season[i + n]
+
+		complexFeatures = np.empty(len(data))
+		record_vs_spread = np.empty(len(data))
+	
+		for i,game in enumerate(data.tolist()):
+			this_team = game[0]
+			score_diff = float(game[1]) - float(game[2])
+			spread = game[3].split()
+			result_vs_spread = resultVsSpread(this_team, score_diff, spread)
+			complexFeatures[i] = result_vs_spread
+
+		for w,record in enumerate(complexFeatures):
+			record_vs_spread[w] = sum(complexFeatures[:w + 1]) / (w + 1)
 		
-		num_weeks = len(season[this_team]['week year'])
-		record_vs_spread = np.empty(num_weeks)
+		return record_vs_spread
 
-		for w in range(num_weeks):
-			score_diff = season[this_team]['score'][w] - season[this_team]['opp_score'][w]
-			spread = season[this_team]['spread'][w].split()
-			if spread != ['Pick']:
-				spread_team = ' '.join(spread[:-1])
-				spread = float(spread[-1])
-			
-				# If spread uses this team
-				if spread_team == this_team:
+def resultVsSpread(this_team, score_diff, spread):
+	'''compute the result vs spread for a given team, score_diff, and spread'''
+		if spread != ['Pick']:
+			spread_team = ''.join(spread[:-1])
+			spread = float(spread[-1])
 
-					# If this_team beat the spread
-					if score_diff + spread > 0:
-						if w == 0:
-							record_vs_spread[w] = 1
-						else:
-							record_vs_spread[w] = (record_vs_spread[w - 1] * w + 1) / float(season[this_team]['week year'][w])
-
-					# If this_team lost against the spread
-					else:
-						if w == 0:
-							record_vs_spread[w] = 0
-						else:
-							record_vs_spread[w] = record_vs_spread[w - 1] * w / float(season[this_team]['week year'][w])
-
-				# If spread uses opp_team
+			# If spread uses this team
+			if spread_team == this_team.replace(' ', ''):
+				# If this_team beat the spread
+				if score_diff + spread > 0:
+					return 1
 				else:
-
-					# If this_team beat the spread
-					if score_diff - spread > 0:
-						if w == 0:
-							record_vs_spread[w] = 1
-						else:
-							record_vs_spread[w] = (record_vs_spread[w - 1] * w + 1) / float(season[this_team]['week year'][w])
-					
-					# If this_team lost against the spread
-					else:
-						if w == 0:
-							record_vs_spread[w] = 0
-						else:
-							record_vs_spread[w] = record_vs_spread[w - 1] * w / float(season[this_team]['week year'][w])
-			
-			# If spread is Pick
+					return 0
+				
+			# If spread uses opp_team
 			else:
-
-				# this_team beat the spread
-				if score_diff > 0:
-					if w == 0:
-						record_vs_spread[w] = 1
-					else:
-						record_vs_spread[w] = (record_vs_spread[w - 1] * w + 1) / float(season[this_team]['week year'][w])
-
-				# this_tem lost against the spread
+				# If this_team beat the spread
+				if score_diff - spread > 0:
+					return 1
 				else:
-					if w == 0:
-						record_vs_spread[w] = 0
-					else:
-						record_vs_spread[w] = record_vs_spread[w - 1] * w / float(season[this_team]['week year'][w])
-			
-			print year, w, season[this_team]['week year'][w], season[this_team]['team'][w], season[this_team]['opp_team'][w], season[this_team]['home_field?'][w], season[this_team]['score'][w], season[this_team]['opp_score'][w], season[this_team]['spread'][w]
+					return 0
 
-		print record_vs_spread
-
-		season = np.matrix(self.season.values)[:-1]
-		features = np.empty_like(season[0:season.shape[0]-(n-1)])
-		
-		for i in range(season.shape[0]-(n-1)):
-			features[i] = season[i]	
-
-		return features
-
-
-
-
-
-
-
-
+		# If spread is Pick
+		else:
+			# this_team beat the spread
+			if score_diff > 0:
+				return 1
+			else:
+				return 0

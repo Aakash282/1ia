@@ -1,4 +1,4 @@
-mimport pandas as pd
+import pandas as pd
 import os
 from features import features
 # from dataIO import loadData as ld
