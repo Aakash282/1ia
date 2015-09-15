@@ -26,7 +26,7 @@ def write_teams_year():
             away_team = format_away(away_team)
             away_team['home_field?'] = no_ser 
             table_out = pd.merge(home_team, away_team, how = 'outer')
-            dirpath =  os.getcwd()[:-10] + '/data/teamdatabyyear/teamdata%d/' %i
+            dirpath =  os.path.expanduser('~') + '/FSA/data/teamdatabyyear/teamdata%d/' %i
             table_out = table_out.sort('week year')
             table_out.to_csv(dirpath + team + '.csv')
             
@@ -71,5 +71,3 @@ def format_away(away_team):
     out.remove('endance')
     away_team.columns = out
     return away_team
-
-write_teams_year()

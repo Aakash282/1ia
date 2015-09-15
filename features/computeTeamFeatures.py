@@ -14,11 +14,11 @@ import time
 
 
 datadir = os.path.expanduser('~') + "/FSA/data/teamdatabyyear/"
-with open('teamHeaders.csv', 'r') as f: 
+with open(os.path.expanduser('~') + '/FSA/1ia/features/teamHeaders.csv', 'r') as f: 
 	headers = f.readlines()
 	headers = [h.strip() for h in headers]
 
-with open('headersForComputed.csv', 'r') as f: 
+with open(os.path.expanduser('~') + '/FSA/1ia/features/headersForComputed.csv', 'r') as f: 
 	headersForComputed = f.readlines()
 	headersForComputed = [h.strip() for h in headersForComputed]
 

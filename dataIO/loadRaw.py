@@ -61,5 +61,3 @@ def getYearData(year):
     base_dir = getPath()
     path = base_dir + '/data/NFLstatsbyyear/NFL0114_TeamStats_raw%d.csv' %year
     return pd.DataFrame.from_csv(path)
-
-parseYear()
