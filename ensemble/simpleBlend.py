@@ -27,15 +27,15 @@ def blend(preds):
 # this is a dummy function that can be used to try to fit our results
 # to an emperical distribution of score differences
 def pdfFit(val):
-#    return val
-    common_scores = [-21, -14, -10, -7, -3, 3, 7, 10, 14, 21]
-    dist = np.array([val - x for x in common_scores])
-    dist_abs = np.array([abs(x) for x in dist])
-    min_dist_score = np.argmin(dist_abs)
-    error = dist[min_dist_score]
-    if error < 2:
-	error = error ** 2 / 2.0
-    return common_scores[min_dist_score] + error
+   return val
+ #    common_scores = [-21, -14, -10, -7, -3, 3, 7, 10, 14, 21]
+ #    dist = np.array([val - x for x in common_scores])
+ #    dist_abs = np.array([abs(x) for x in dist])
+ #    min_dist_score = np.argmin(dist_abs)
+ #    error = dist[min_dist_score]
+ #    if error < 2:
+	# error = error ** 2 / 2.0
+ #    return common_scores[min_dist_score] + error
 '''
 import matplotlib.pyplot as plt
 import numpy as np

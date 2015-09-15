@@ -9,16 +9,16 @@ from features import featureNoise as noise
 # features.get_feature_set(2014, 2015)
 
 # synthesize data
-noise.synth(50)
+noise.synth(55)
 
 # Load in the data
 dir_prefix = os.path.expanduser('~') + "/FSA/data/"
 inpath = "FeaturesSynth/"
 testInPath = 'FeaturesByYear/'
 outpath = "TrainTestSynth/"
-train_years = range(2001, 2013)
+train_years = range(2001, 2012)
 val_years = range(2011, 2013)
-test_years = range(2013, 2014)
+test_years = range(2012, 2013)
 
 # exclude years
 '''
