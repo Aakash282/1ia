@@ -17,10 +17,11 @@ def parse():
     data_dir = base_dir + '/data/'
 
     # aggregate_data is where every year's data is added
-    aggregate_data = pd.read_csv(data_dir + "headers.csv", sep = ";")
+    aggregate_data = pd.read_csv(data_dir + "headers.csv", header=None, sep = ";")
     for year in range(2001, 2015):
         print year
-        year_data = pd.read_csv(data_dir + "rawdata/rawdata%d" % year, sep=";")
+        year_data = pd.read_csv(data_dir + "rawdata/rawdata%d" % year, sep=";", header=None)
+        print year_data.columns
         for line in range(len(year_data['week'])):
             year_data['week'][line] = str(year_data['week'][line]) + " %d" %year
           
@@ -40,13 +41,12 @@ def parseYear():
 
     for year in range(2001, 2015):
         print year
-        aggregate_data = pd.read_csv(data_dir + "headers.csv", sep = ";")
-        year_data = pd.read_csv(data_dir + "rawdata/rawdata%d" % year, sep=";")
-        aggregate_data = pd.merge(aggregate_data, year_data, how = 'outer')
-        columns = list(aggregate_data.keys())
+        headers = pd.read_csv(data_dir + "headers.csv", sep = ",")
+        year_data = pd.read_csv(data_dir + "rawdata/rawdata%d" % year, sep=";", header=None)
+        columns = list(headers.keys())
         columns[0] = 'week year'
-        aggregate_data.columns = columns
-        aggregate_data.to_csv(data_dir + "NFL0114_TeamStats_raw%d.csv" %year)
+        year_data.columns = columns
+        year_data.to_csv(data_dir + "NFLstatsbyyear/NFL0114_TeamStats_raw%d.csv" %year)
         
 def getDataset():
     base_dir = getPath()
@@ -61,3 +61,5 @@ def getYearData(year):
     base_dir = getPath()
     path = base_dir + '/data/NFLstatsbyyear/NFL0114_TeamStats_raw%d.csv' %year
     return pd.DataFrame.from_csv(path)
+
+parseYear()
