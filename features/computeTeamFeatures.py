@@ -40,8 +40,8 @@ for year in range(2001, 2015):
 		features = gen.computeFeatures(3)
 		features = np.append(np.matrix(season[t]['week year'][3:]).transpose(), features, axis=1)
 
-		computedHeaders = ['record_vs_spread']
-		computedFeatures = np.array([gen.computeComplexFeatures(3)])
+		computedHeaders = ['record_vs_spread', 'avg_closing_ability', 'comeback_record']
+		computedFeatures = gen.computeComplexFeatures(3)
 
 		features = np.concatenate((features, computedFeatures.transpose()), axis=1)
 		features = features.tolist()
