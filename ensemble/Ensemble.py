@@ -62,7 +62,7 @@ class Ensemble:
 
     def validate(self, actual, spread, test):
         if test:
-            val.testError(self.blended_results, actual, spread)
+            return val.testError(self.blended_results, actual, spread)
         else:
             val.trainError(self.blended_results, actual, spread)
 

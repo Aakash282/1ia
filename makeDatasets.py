@@ -21,7 +21,7 @@ if args.all:
     lr.parseYear()
     # Run separate_teams
     print "Separating teams"
-    sep.write_teams_year()
+    sep.write_teams_years()
     # Run features
     execfile(os.path.expanduser('~') + "/FSA/1ia/features/computeTeamFeatures.py")
     print "Computing features"
