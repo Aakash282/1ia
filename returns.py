@@ -70,7 +70,11 @@ def logistic(x):
 def pEstGraph(wins, losses):
     '''Estimates the distribution of p given a number of wins and losses.  
     This is correct up to a normalization constant'''
-    x = np.linspace(0, 1, 100)
-    norm = math.factorial(wins + losses + 1) / (math.factorial(wins) * math.factorial(losses))
+    x = np.linspace(.3, .8, 1000)
+    norm = math.factorial(wins + losses) / (math.factorial(wins) * math.factorial(losses))
     out = [norm * ((1 - p) ** losses) * (p ** wins) for p in x]
+    plt.xlabel('probability of success')
+    plt.ylabel('relative probability of p being this value')
+    plt.title('Estimation of p based on results')
     plt.plot(x, out)
+    plt.show()

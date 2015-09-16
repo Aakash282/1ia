@@ -100,8 +100,8 @@ if __name__ == "__main__":
     results = []
     for week in set(df_train['week_year']):
         print 'week', week
-        plt.figure('week %d' %week)
-        plt.title(week)
+        #plt.figure('week %d' %week)
+        #plt.title(week)
         train_idx = X_train['week_year'] == week
         test_idx = X_test['week_year'] == week
         results.append(
@@ -110,11 +110,16 @@ if __name__ == "__main__":
         
         #plt.legend(["actual", "predicted"])
     #plt.show()
+    wins, losses = 0, 0
     for elem in results:
         print elem  
+        wins += elem['wins']
+        losses += elem['losses']
+    print 'cumulative p', wins / float(wins + losses)
     print 'percent return fixed:', \
           round((returns.returnsFromData(results, .4, True) - 1) * 100, 3)
     print 'percent return smartP:', \
           round((returns.returnsFromData(results, .4, False) - 1) * 100, 3)
+    returns.pEstGraph(wins, losses)
     
     
