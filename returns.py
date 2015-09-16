@@ -7,6 +7,20 @@ we follow a strategy such that we bet a percent of our total investment each
 week.  The histogram plot is of the log returns.  Values are final money for 
 an investment of 1'''
 
+def returnsFromData(results, bet_percent, cons):
+    bet = 1
+    win_lst = []
+    loss_lst = []    
+    for week in results:
+        if not cons:
+            # this needs to access the previous element, not the current
+            bet_percent = betPercent(sum(win_lst), sum(loss_lst), bet_percent)
+        win_lst.append(week['wins'])
+        loss_lst.append(week['losses'])
+        bet += bet_percent * (win_lst[-1] * 10/11.0 - loss_lst[-1]) / \
+            (win_lst[-1] + loss_lst[-1])
+    return bet
+
 def Percent(p, bet_percent, years, cons):
     # p = Success rate
     # bet_percent = amount of money to bet each week as a percent of total.  

@@ -8,7 +8,7 @@ from scipy.stats import gaussian_kde
 from ensemble.Ensemble import Ensemble
 import pandas as pd
 import os
-
+import returns
 
 def importData(training=1):
     # Change the data dir if pulling from the normal set
@@ -46,28 +46,30 @@ def train(ens, x_train, y_train):
 
 def test(ens, x_train, y_train, train_spread, x_test, y_test, test_spread):
     # find training error
-
+    plot = False
+    
     ens.predict(x_train, train=True)
     a = ens.blend()
     ens.validate(y_train, train_spread, False)
-
-    density = gaussian_kde(a)
-    xs = np.linspace(-20, 20, 200)
-    density.covariance_factor = lambda : .1
-    density._compute_covariance()
-    plt.plot(xs,density(xs))
-
+    
     ens.predict(x_test, train=False)
     b = ens.blend()
     c = ens.validate(y_test, test_spread, True)
 
-    density = gaussian_kde(b)
-    xs = np.linspace(-20, 20, 200)
-    density.covariance_factor = lambda : .1
-    density._compute_covariance()
-    plt.plot(xs,density(xs))
-    return c
-
+    if plot:
+        density = gaussian_kde(a)
+        xs = np.linspace(-20, 20, 200)
+        density.covariance_factor = lambda : .1
+        density._compute_covariance()
+        plt.plot(xs,density(xs))
+    
+        density = gaussian_kde(b)
+        xs = np.linspace(-20, 20, 200)
+        density.covariance_factor = lambda : .1
+        density._compute_covariance()
+        plt.plot(xs,density(xs))
+    return c    
+    
 if __name__ == "__main__":
     df_train = importData()
     df_test = importData(0)
@@ -95,16 +97,24 @@ if __name__ == "__main__":
 
     ens = create_ensemble()
     train(ens, X_train, Y_train),
-
+    results = []
     for week in set(df_train['week_year']):
         print 'week', week
         plt.figure('week %d' %week)
         plt.title(week)
         train_idx = X_train['week_year'] == week
         test_idx = X_test['week_year'] == week
-        c = test(ens, X_train[train_idx], Y_train[train_idx], train_spread[train_idx],
-                  X_test[test_idx], Y_test[test_idx], test_spread[test_idx])
-
-        plt.legend(["actual", "predicted"])
-    plt.show()
-
+        results.append(
+            test(ens, X_train[train_idx], Y_train[train_idx], train_spread[train_idx],
+                  X_test[test_idx], Y_test[test_idx], test_spread[test_idx]))
+        
+        #plt.legend(["actual", "predicted"])
+    #plt.show()
+    for elem in results:
+        print elem  
+    print 'percent return fixed:', \
+          round((returns.returnsFromData(results, .4, True) - 1) * 100, 3)
+    print 'percent return smartP:', \
+          round((returns.returnsFromData(results, .4, False) - 1) * 100, 3)
+    
+    
