@@ -8,17 +8,17 @@ import tableFns as TFns
 import loadData as load
 import game
 import team
-import multiprocessing 
+import multiprocessing
 from joblib import Parallel, delayed
 import time
 
 
 datadir = os.path.expanduser('~') + "/FSA/data/teamdatabyyear/"
-with open(os.path.expanduser('~') + '/FSA/1ia/features/teamHeaders.csv', 'r') as f: 
+with open(os.path.expanduser('~') + '/FSA/1ia/features/teamHeaders.csv', 'r') as f:
 	headers = f.readlines()
 	headers = [h.strip() for h in headers]
 
-with open(os.path.expanduser('~') + '/FSA/1ia/features/headersForComputed.csv', 'r') as f: 
+with open(os.path.expanduser('~') + '/FSA/1ia/features/headersForComputed.csv', 'r') as f:
 	headersForComputed = f.readlines()
 	headersForComputed = [h.strip() for h in headersForComputed]
 
@@ -45,10 +45,11 @@ for year in range(2001, 2015):
 
 		features = np.concatenate((features, computedFeatures.transpose()), axis=1)
 		features = features.tolist()
-		
+
+
 		featuresdir = os.path.expanduser('~') + "/FSA/data/teamfeaturesbyyear/features%d/" % year
-		with open(featuresdir + t + '.csv', 'w') as g: 
+		with open(featuresdir + t + '.csv', 'w') as g:
 			g.write(','.join(['week'] + headers + DVOAheaders + computedHeaders) + '\n')
-			for game in features: 
+			for game in features:
 				g.write(','.join([str(x) for x in game]) + '\n')
 
