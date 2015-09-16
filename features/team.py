@@ -40,9 +40,91 @@ class team:
 		# each computed feature is its own row
 		complexFeatures = np.empty(len(season)-(n-1))
 
-		# add a computed feature
-		complexFeatures = computeRecordVsSpread(season, n)
+		record_vs_spread = np.array(computeRecordVsSpread(season, n))
+		avg_closing_ability = np.array(computeClosingAbilityStats(season, n))
+		comeback_record = np.array(computeComebackRecord(season, n))
+		
+		complexFeatures = np.vstack((record_vs_spread, avg_closing_ability))
+		complexFeatures = np.vstack((complexFeatures, comeback_record))
+
 		return complexFeatures
+
+# This function computes a team's ability to close out a game
+def computeClosingAbilityStats(season, n):
+	closing_ability_stats = np.empty(len(season))
+	avg_closing_ability = np.empty(season.shape[0]-(n-1))
+
+	for i,game in enumerate(season.tolist()):
+		score = float(game[1])
+		opp_score = float(game[2])
+		final_score_diff = score - opp_score
+		startof_fourth_score_diff = (score - float(game[4])) - (opp_score - float(game[5]))
+		closing_ability_stats[i] = final_score_diff - startof_fourth_score_diff
+
+	# Compute moving average
+	for i in range(season.shape[0]-(n-1)):
+		window = closing_ability_stats[i:i+n]
+		window = window.mean(0)
+		avg_closing_ability[i] = window
+
+	return avg_closing_ability
+
+
+# This function computes a team's comeback record
+def computeComebackRecord(season, n):
+	successful_comebacks = np.empty(len(season))
+	comeback_opportunities = np.empty(len(season))
+	comeback_record = np.empty(len(season))
+
+	for i,game in enumerate(season.tolist()):
+		score = float(game[1])
+		opp_score = float(game[2])
+		score_diff = score - opp_score
+		score_startof_fourth = score - float(game[4])
+		opp_score_startof_fourth = opp_score - float(game[5])
+
+		# If there was an opportunity for a comeback
+		if score_startof_fourth < opp_score_startof_fourth:
+			comeback_opportunities[i] = 1
+
+			# If a comeback occurred
+			if score_diff > 0:
+				successful_comebacks[i] = 1
+
+			# If a comeback attempt failed
+			else:
+				successful_comebacks[i] = 0
+
+		# If there was no opportunity for a comeback
+		else:
+			comeback_opportunities[i] = 0
+			successful_comebacks[i] = 0
+
+	# Compute sum of comeback opportunities per game
+	sum_comeback_opp = [sum(comeback_opportunities[:i]) for i in range(len(comeback_opportunities))][n:]
+	sum_comeback_opp.append(sum(comeback_opportunities))
+
+	# Compute sum of successful comebacks per game
+	sum_successful_comebacks = [sum(successful_comebacks[:i]) for i in range(len(successful_comebacks))][n:]
+	sum_successful_comebacks.append(sum(successful_comebacks))
+
+	comeback_stats = np.empty(len(season))
+
+	for i in range(len(sum_comeback_opp)):
+		# If the team has had opportunites to come back
+		if sum_comeback_opp[i] > 0:
+			comeback_stats[i] = sum_successful_comebacks[i] / sum_comeback_opp[i]
+
+		# If the team has never been losing at the start of the 4th quarter
+		else:
+			comeback_stats[i] = 1
+
+	# Resize and assign correct values
+	comeback_record = comeback_stats[:-(n-1)]
+	for i in range(len(comeback_record)):
+		comeback_record[i] = comeback_stats[i]
+
+	return comeback_record
 
 # This function computes a team's record vs the spread as a fraction
 def computeRecordVsSpread(season, n):
@@ -50,14 +132,15 @@ def computeRecordVsSpread(season, n):
 		buf = np.empty(len(season))
 	
 		for i,game in enumerate(season.tolist()):
-			this_team = game[0]
+			team = game[0]
 			score_diff = float(game[1]) - float(game[2])
 			spread = game[3].split()
-			record_vs_spread[i] = resultVsSpread(this_team, score_diff, spread)
+			record_vs_spread[i] = resultVsSpread(team, score_diff, spread)
 
 		# use buffer to compute sum of records all weeks
 		buf = [sum(record_vs_spread[:i]) for i in range(len(record_vs_spread))][n:]
 		buf.append(sum(record_vs_spread))
+
 		# now divide by record size (i + n)
 		buf = [buf[i] / (i+n) for i in range(len(buf))]
 		
@@ -69,15 +152,15 @@ def computeRecordVsSpread(season, n):
 		return record_vs_spread
 		
 # this function computes how a team did against a spread for a single game
-def resultVsSpread(this_team, score_diff, spread):
+def resultVsSpread(team, score_diff, spread):
 	'''compute the result vs spread for a given team, score_diff, and spread'''
 	if spread != ['Pick']:
 		spread_team = ''.join(spread[:-1])
 		spread = float(spread[-1])
 
 		# If spread uses this team
-		if spread_team == this_team.replace(' ', ''):
-			# If this_team beat the spread
+		if spread_team == team.replace(' ', ''):
+			# If team beat the spread
 			if score_diff + spread > 0:
 				return 1
 			else:
@@ -85,7 +168,7 @@ def resultVsSpread(this_team, score_diff, spread):
 			
 		# If spread uses opp_team
 		else:
-			# If this_team beat the spread
+			# If team beat the spread
 			if score_diff - spread > 0:
 				return 1
 			else:
@@ -93,7 +176,7 @@ def resultVsSpread(this_team, score_diff, spread):
 
 	# If spread is Pick
 	else:
-		# this_team beat the spread
+		# team beat the spread
 		if score_diff > 0:
 			return 1
 		else:
