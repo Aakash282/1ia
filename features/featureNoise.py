@@ -23,6 +23,7 @@ def synth(n):
             tempTable = features
             featureList = list(tempTable.keys())
             featureList.remove('spread')
+            featureList.remove('week_year')
             for key in featureList:
                 # The noise is added in here
                 tempTable[key] *= 1 + (rand.random() - 0.5) / 5.0

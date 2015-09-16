@@ -18,6 +18,56 @@ def importData(training=1):
     else:
         return pd.DataFrame.from_csv(datadir + 'testing_set.csv')
 
+
+def create_ensemble():
+    # create an ensemble to start adding models
+    ens = Ensemble()
+
+    # add a SK Random Forests
+    ens.addSKRF([2])
+
+    # add a SK Gradient Boosted Machine
+    # ens.addSKGBR([150, .07])
+
+    # add a SK SVM
+    # ens.addSKSVM([])
+
+    # add an h2o RF
+    #ens.addh2oRF([True, files, 100, 150, 2])
+
+    # add an h2o DL Network
+    #ens.addh2oDL([True, files, [150, 100], 150, 2])
+
+    return ens
+
+def train(ens, x_train, y_train):
+    # train all models
+    ens.train(x_train, y_train)
+
+def test(ens, x_train, y_train, train_spread, x_test, y_test, test_spread):
+    # find training error
+
+    ens.predict(x_train, train=True)
+    a = ens.blend()
+    ens.validate(y_train, train_spread, False)
+
+    density = gaussian_kde(a)
+    xs = np.linspace(-20, 20, 200)
+    density.covariance_factor = lambda : .1
+    density._compute_covariance()
+    plt.plot(xs,density(xs))
+
+    ens.predict(x_test, train=False)
+    b = ens.blend()
+    ens.validate(y_test, test_spread, True)
+
+    density = gaussian_kde(b)
+    xs = np.linspace(-20, 20, 200)
+    density.covariance_factor = lambda : .1
+    density._compute_covariance()
+    plt.plot(xs,density(xs))
+
+
 if __name__ == "__main__":
     df_train = importData()
     df_test = importData(0)
@@ -35,57 +85,26 @@ if __name__ == "__main__":
     # Load the datasets into memory to hand of to the models
     feature_cols = [col for col in df_train.columns if col not in holdout]
     test_cols = [col for col in df_train.columns if col in ['score diff']]
-    # import pdb
-    # pdb.set_trace()
-    x_train = df_train[feature_cols]
-    y_train = df_train[test_cols]
+
+    X_train = df_train[feature_cols]
+    Y_train = df_train[test_cols]
     train_spread = df_train[['spread']]
-    x_test = df_test[feature_cols]
-    y_test = df_test[test_cols]
+    X_test = df_test[feature_cols]
+    Y_test = df_test[test_cols]
     test_spread = df_test[['spread']]
 
-    # print list(df_train.columns)
+    ens = create_ensemble()
+    train(ens, X_train, Y_train),
 
-    # create an ensemble to start adding models
-    ens = Ensemble()
+    for week in set(df_train['week_year']):
+        print 'week', week
+        plt.figure('week %d' %week)
+        plt.title(week)
+        train_idx = X_train['week_year'] == week
+        test_idx = X_test['week_year'] == week
+        test(ens, X_train[train_idx], Y_train[train_idx], train_spread[train_idx],
+                  X_test[test_idx], Y_test[test_idx], test_spread[test_idx])
 
-    # add a SK Random Forests
-    ens.addSKRF([100])
-
-    # add a SK Gradient Boosted Machine
-    # ens.addSKGBR([150, .07])
-
-    # add a SK SVM
-    # ens.addSKSVM([])
-
-    # add an h2o RF
-    #ens.addh2oRF([True, files, 100, 150, 2])
-
-    # add an h2o DL Network
-    #ens.addh2oDL([True, files, [150, 100], 150, 2])
-
-    # train all models
-    ens.train(x_train, y_train)
-
-    # find training error
-    ens.predict(x_train, train=True)
-    a = ens.blend()
-    ens.validate(y_train, train_spread, False)
-
-    # predict on test set and compute error report
-    ens.predict(x_test, train=False)
-    b = ens.blend()
-    ens.validate(y_test, test_spread, True)
-
-    density = gaussian_kde(a)
-    xs = np.linspace(-20, 20, 200)
-    density.covariance_factor = lambda : .1
-    density._compute_covariance()
-    plt.plot(xs,density(xs))
-
-    density = gaussian_kde(b)
-    xs = np.linspace(-20, 20, 200)
-    density.covariance_factor = lambda : .1
-    density._compute_covariance()
-    plt.plot(xs,density(xs))
+        plt.legend(["actual", "predicted"])
     plt.show()
+
