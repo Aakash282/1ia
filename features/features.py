@@ -46,7 +46,7 @@ def feature_set(start, stop):
                              row['Roof'], row['time_of_day_(ET)'])
             
             # Adjust this to change the length of the moving average #FuckMagicNumbers #GlenGeorgeRuinedMe
-            movingAvgLength = 6
+            movingAvgLength = 3
             temp_features = temp_game.get_features(movingAvgLength)
             if None in temp_features['away'].values() or \
                None in temp_features['home'].values():
@@ -64,12 +64,16 @@ def feature_set(start, stop):
             output.columns = columns
             df = pd.DataFrame.append(df, output)
             # print output.values
-        added_columns = [('3rd_down_conv_%', '3rd_down_converted', '3rd_down_attempts'), \
-                         ('4th_down_conv_%', '4th_down_converted', '4th_down_attempts'), 
+        added_columns = [('3rd_down_conv%', '3rd_down_converted', '3rd_down_attempts'), \
+                         ('4th_down_conv%', '4th_down_converted', '4th_down_attempts'), 
                          ('yards_play', 'total_yards', 'total_plays'),
                          ('yards_carry', 'rush_yards', 'rush_attempts'),
                          ('yards_throw', 'pass_yards', 'pass_attempt'),
-                         ('pass_comp_%', 'pass_comp', 'pass_attempt')]
+                         ('yards_comp', 'pass_yards', 'pass_comp'),
+                         ('pass_comp%', 'pass_comp', 'pass_attempt'),
+                         ('rush yards%', 'rush_yards', 'total_yards'),
+                         # PassTD/Int might be too noisy?
+                         ('PassTD/INT', 'pass_TDs', 'INT')]
         df = add_div_features(df, added_columns)
         df.to_csv(os.path.expanduser('~') + '/FSA/data/FeaturesByYear/features%d.csv' % i, index = False)
 
