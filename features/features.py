@@ -59,4 +59,38 @@ def feature_set(year):
     header = ['away ' + x for x in temp_features['away']] + \
              ['home ' + x for x in temp_features['away']] + ['score diff', 'spread', 'roof', 'timeofgame', 'week_year']
     output_file = os.path.expanduser('~') + '/FSA/data/FeaturesByYear/features%d.csv' % year
-    np.savetxt(output_file, np.array(outputs), delimiter=',', fmt="%s", header=','.join(header))
+    np.savetxt(output_file, np.array(outputs), delimiter=',', fmt="%s", header=','.join(header), comments = '')
+    df = pd.read_csv(output_file)
+    added_columns = [('3rd_down_conv%', '3rd_down_converted', '3rd_down_attempts'), \
+                         ('4th_down_conv%', '4th_down_converted', '4th_down_attempts'), 
+                         ('yards_play', 'total_yards', 'total_plays'),
+                         ('yards_carry', 'rush_yards', 'rush_attempts'),
+                         ('yards_throw', 'pass_yards', 'pass_attempt'),
+                         ('yards_comp', 'pass_yards', 'pass_comp'),
+                         ('pass_comp%', 'pass_comp', 'pass_attempt'),
+                         ('rush yards%', 'rush_yards', 'total_yards'),
+                         # PassTD/Int might be too noisy?
+                         ('PassTD/INT', 'pass_TDs', 'INT')]
+    df = add_div_features(df, added_columns)
+    df.to_csv(os.path.expanduser('~') + '/FSA/data/FeaturesByYear/features%d.csv' %year, index = False)
+
+def divide_features(table, feature_name, feature_numerator, feature_divisor):
+    for elem in ['away ', 'home ', 'away opp_', 'home opp_']:
+        table[elem + feature_name] = table[elem + feature_numerator] / table[elem + feature_divisor]
+        vals = []
+        for item in table[elem + feature_name].values:
+            if not np.isfinite(item) or np.isnan(item):
+                vals.append(0.5)
+            else:
+                vals.append(item)
+        table[elem + feature_name] = np.array(vals)
+    return table
+            
+def add_div_features(table, div_list):
+    # div list is a list of tuples
+    for elem in div_list:
+        table = divide_features(table, elem[0], elem[1], elem[2])
+    return table    
+    
+    
+    
