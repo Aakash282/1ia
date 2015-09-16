@@ -9,7 +9,7 @@ from features import featureNoise as noise
 # features.get_feature_set(2014, 2015)
 
 # synthesize data
-noise.synth(55)
+noise.synth(5)
 
 # Load in the data
 dir_prefix = os.path.expanduser('~') + "/FSA/data/"

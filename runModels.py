@@ -1,21 +1,21 @@
-# runModels.py 
-# This file runs all models and then runs the appropriate 
-# functions to blend and validate the predictions. 
+# runModels.py
+# This file runs all models and then runs the appropriate
+# functions to blend and validate the predictions.
 # Only run this after running makeDatasets.py
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import gaussian_kde
 from ensemble.Ensemble import Ensemble
-import pandas as pd 
+import pandas as pd
 import os
 
 
 def importData(training=1):
     # Change the data dir if pulling from the normal set
     datadir = os.getcwd().strip('1ia') + 'data/TrainTestSynth/'
-    if training: 
+    if training:
         return pd.DataFrame.from_csv(datadir + 'training_set.csv')
-    else: 
+    else:
         return pd.DataFrame.from_csv(datadir + 'testing_set.csv')
 
 if __name__ == "__main__":
@@ -29,12 +29,14 @@ if __name__ == "__main__":
     spread = False
 
     holdout = ['score diff', 'home score', 'away score']
-    if not spread: 
+    if not spread:
         holdout.append('spread')
 
     # Load the datasets into memory to hand of to the models
     feature_cols = [col for col in df_train.columns if col not in holdout]
     test_cols = [col for col in df_train.columns if col in ['score diff']]
+    # import pdb
+    # pdb.set_trace()
     x_train = df_train[feature_cols]
     y_train = df_train[test_cols]
     train_spread = df_train[['spread']]
@@ -48,19 +50,19 @@ if __name__ == "__main__":
     ens = Ensemble()
 
     # add a SK Random Forests
-    # ens.addSKRF([50])
+    ens.addSKRF([100])
 
     # add a SK Gradient Boosted Machine
     # ens.addSKGBR([150, .07])
 
-    # add a SK SVM 
+    # add a SK SVM
     # ens.addSKSVM([])
 
     # add an h2o RF
-    ens.addh2oRF([True, files, 100, 150, 2])
+    #ens.addh2oRF([True, files, 100, 150, 2])
 
     # add an h2o DL Network
-    ens.addh2oDL([True, files, [150, 100], 150, 2])
+    #ens.addh2oDL([True, files, [150, 100], 150, 2])
 
     # train all models
     ens.train(x_train, y_train)
@@ -74,16 +76,16 @@ if __name__ == "__main__":
     ens.predict(x_test, train=False)
     b = ens.blend()
     ens.validate(y_test, test_spread, True)
-    
+
     density = gaussian_kde(a)
     xs = np.linspace(-20, 20, 200)
     density.covariance_factor = lambda : .1
     density._compute_covariance()
     plt.plot(xs,density(xs))
-    
+
     density = gaussian_kde(b)
     xs = np.linspace(-20, 20, 200)
     density.covariance_factor = lambda : .1
     density._compute_covariance()
     plt.plot(xs,density(xs))
-    plt.show()    
+    plt.show()
