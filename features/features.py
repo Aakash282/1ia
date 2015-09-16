@@ -13,13 +13,13 @@ import time
 
 def get_feature_set(start, stop):
     '''parallelized version of feature_set'''
-    start_time = time.clock()
+    start_time = time.time()
     # the -1 is because I like to use my computer while running things
     num_cores = min((stop - start) + 1, multiprocessing.cpu_count() - 1)
     # to ensure that at least one core is being used
     num_cores = max(num_cores, 1)
     Parallel(n_jobs = num_cores)(delayed(feature_set)(x, x) for x in range(start, stop + 1))
-    print 'Ellapsed time', time.clock() - start_time, 'Using %i core(s)' %num_cores
+    print 'Ellapsed time', (time.time() - start_time) / 60.0, 'minutes Using %i core(s)' %num_cores
 
 def extractFeatures(team, week, year):
     try:
@@ -46,7 +46,7 @@ def feature_set(start, stop):
                              row['Roof'], row['time_of_day_(ET)'])
             
             # Adjust this to change the length of the moving average #FuckMagicNumbers #GlenGeorgeRuinedMe
-            movingAvgLength = 3
+            movingAvgLength = 6
             temp_features = temp_game.get_features(movingAvgLength)
             if None in temp_features['away'].values() or \
                None in temp_features['home'].values():
@@ -64,5 +64,32 @@ def feature_set(start, stop):
             output.columns = columns
             df = pd.DataFrame.append(df, output)
             # print output.values
+        added_columns = [('3rd_down_conv_%', '3rd_down_converted', '3rd_down_attempts'), \
+                         ('4th_down_conv_%', '4th_down_converted', '4th_down_attempts'), 
+                         ('yards_play', 'total_yards', 'total_plays'),
+                         ('yards_carry', 'rush_yards', 'rush_attempts'),
+                         ('yards_throw', 'pass_yards', 'pass_attempt'),
+                         ('pass_comp_%', 'pass_comp', 'pass_attempt')]
+        df = add_div_features(df, added_columns)
         df.to_csv(os.path.expanduser('~') + '/FSA/data/FeaturesByYear/features%d.csv' % i, index = False)
-        
+
+def divide_features(table, feature_name, feature_numerator, feature_divisor):
+    for elem in ['away ', 'home ', 'away opp_', 'home opp_']:
+        table[elem + feature_name] = table[elem + feature_numerator] / table[elem + feature_divisor]
+        vals = []
+        for item in table[elem + feature_name].values:
+            if not np.isfinite(item) or np.isnan(item):
+                vals.append(0.5)
+            else:
+                vals.append(item)
+        table[elem + feature_name] = np.array(vals)
+    return table
+            
+def add_div_features(table, div_list):
+    # div list is a list of tuples
+    for elem in div_list:
+        table = divide_features(table, elem[0], elem[1], elem[2])
+    return table    
+    
+    
+    
