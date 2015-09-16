@@ -16,28 +16,24 @@ parser.add_argument("-f", "--features", help="Remake only the features and then 
 args = parser.parse_args()
 
 if args.all:
-  # Run loadRaw
-  print "Loading rawdata"
-  lr.parseYear()
-  # Run separate_teams
-  print "Separating teams"
-  sep.write_teams_year()
-  # Run features
-  execfile(os.path.expanduser('~') + "/FSA/1ia/features/computeTeamFeatures.py")
-  start = input('Enter starting year for features: ')
-  stop = input('Enter stopping year for features: ')
-  print "Computing features"
-  from features import features
-  features.get_feature_set(start, stop)
+    # Run loadRaw
+    print "Loading rawdata"
+    lr.parseYear()
+    # Run separate_teams
+    print "Separating teams"
+    sep.write_teams_years()
+    # Run features
+    execfile(os.path.expanduser('~') + "/FSA/1ia/features/computeTeamFeatures.py")
+    print "Computing features"
+    from features import features
+    features.get_feature_set(2001, 2014)
 
 elif args.features:
-  # Run features
-  execfile(os.path.expanduser('~') + "/FSA/1ia/features/computeTeamFeatures.py")
-  start = input('Enter starting year for features: ')
-  stop = input('Enter stopping year for features: ')
-  print "Computing features"
-  from features import features
-  features.get_feature_set(start, stop)
+    # Run features
+    execfile(os.path.expanduser('~') + "/FSA/1ia/features/computeTeamFeatures.py")
+    print "Computing features"
+    from features import features
+    features.get_feature_set(2001, 2014)
 
 
 train_start = input('Enter starting year for training set: ')

@@ -4,8 +4,8 @@ from models.sk_RF import sk_RF
 from models.sk_GBR import sk_GBR
 from models.sk_SVM import sk_SVM
 
-from models.h2o_RF import h2o_RF
-from models.h2o_DL import h2o_DL
+#from models.h2o_RF import h2o_RF
+#from models.h2o_DL import h2o_DL
 
 import simpleBlend as blender
 import validate as val
@@ -59,11 +59,10 @@ class Ensemble:
         # blend all results in self.preds together
         self.blended_results = blender.blend(self.preds)
         return self.blended_results
-    
+
     def validate(self, actual, spread, test):
         if test:
             val.testError(self.blended_results, actual, spread)
         else:
             val.trainError(self.blended_results, actual, spread)
 
-    
