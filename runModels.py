@@ -27,10 +27,10 @@ def create_ensemble():
     ens.addSKRF([2])
 
     # add a SK Gradient Boosted Machine
-    # ens.addSKGBR([150, .07])
+    #ens.addSKGBR([150, .07])
 
     # add a SK SVM
-    # ens.addSKSVM([])
+    #ens.addSKSVM([])
 
     # add an h2o RF
     #ens.addh2oRF([True, files, 100, 150, 2])
@@ -115,11 +115,11 @@ if __name__ == "__main__":
         print elem  
         wins += elem['wins']
         losses += elem['losses']
-    print 'cumulative p', wins / float(wins + losses)
+    print 'cumulative p', round(wins / float(wins + losses), 2)
     print 'percent return fixed:', \
-          round((returns.returnsFromData(results, .4, True) - 1) * 100, 3)
+          round((returns.returnsFromData(results, .4, True) - 1) * 100, 1)
     print 'percent return smartP:', \
-          round((returns.returnsFromData(results, .4, False) - 1) * 100, 3)
+          round((returns.returnsFromData(results, .4, False) - 1) * 100, 1)
     returns.pEstGraph(wins, losses)
     
     

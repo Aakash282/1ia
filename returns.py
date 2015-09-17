@@ -1,27 +1,29 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-''' This is a simulation of what our returns would look like if we bet on all
-games each week, we bet evenly on all games, our returns are independent, and 
-we follow a strategy such that we bet a percent of our total investment each 
-week.  The histogram plot is of the log returns.  Values are final money for 
-an investment of 1'''
 
 def returnsFromData(results, bet_percent, cons):
+    '''Returns the final amount returned basaed on a given betting strategy.  
+    Input is a list of dictionaries, float, and a boolean'''
     bet = 1
     win_lst = []
     loss_lst = []    
     for week in results:
+        # If not constant betting strategy, use 'smartP'
         if not cons:
-            # this needs to access the previous element, not the current
             bet_percent = betPercent(sum(win_lst), sum(loss_lst), bet_percent)
         win_lst.append(week['wins'])
         loss_lst.append(week['losses'])
-        bet += bet_percent * (win_lst[-1] * 10/11.0 - loss_lst[-1]) / \
+        bet += bet_percent * bet * (win_lst[-1] * 10/11.0 - loss_lst[-1]) / \
             (win_lst[-1] + loss_lst[-1])
     return bet
 
 def Percent(p, bet_percent, years, cons):
+    ''' This is a simulation of what our returns would look like if we bet on all
+    games each week, we bet evenly on all games, our returns are independent, and 
+    we follow a strategy such that we bet a percent of our total investment each 
+    week.  The histogram plot is of the log returns.  Values are final money for 
+    an investment of 1'''    
     # p = Success rate
     # bet_percent = amount of money to bet each week as a percent of total.  
     # number of simulations 
@@ -53,18 +55,28 @@ def Percent(p, bet_percent, years, cons):
     print '%1 worst', final_payoff[simulations / 100], 'mean', final_payoff.mean(), 'std', final_payoff.std()
     
 def betPercent(wins, losses, betting_percent):
+    '''Function used to optimize the betting strategy given the current
+    estimates of p.  No theoretical motivation for this function besides a 
+    penalty for large uncertainties'''
     total = float(wins + losses)
     if total == 0:
         return betting_percent
     pest = wins / total
+    # variance of a binomial distribution
     error = pest * (1 - pest) / (total ** .5)
     if error == 0:
-        error = .1 / (total ** .5)
+        if wins == 0:
+            pest_err = 1 / (total + 1.0)
+        elif losses == 0:
+            pest_err = wins / (total + 1.0)
+        error = pest_err * (1 - pest_err) / (total ** .5)
     out = (pest - 11 / 21.0) / (11 * 21.0) / error ** 2
-    sigmoid_scale = pest ** .5 - error
+    # maximum amount bet
+    sigmoid_scale = ((pest + error ** .5) - 11 / 21.0)
     return logistic(out) * sigmoid_scale
 
 def logistic(x):
+    '''Logistic function'''
     return 1/(1 + math.exp(-x))
 
 def pEstGraph(wins, losses):

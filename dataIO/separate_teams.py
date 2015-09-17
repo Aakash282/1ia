@@ -14,6 +14,7 @@ def separate_teams(table):
     return team_dict
 
 def write_teams_year(year):
+    '''Writes the feature data for all teams in a given year'''
     table = load.getYearData(year)
     teams_table = separate_teams(table)
     team_keys = teams_table.keys()

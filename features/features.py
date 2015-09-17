@@ -5,7 +5,6 @@ import pandas as pd
 import multiprocessing
 from joblib import Parallel, delayed
 from timeit import default_timer
-
 from dataIO import loadData
 from lib import movingMedian
 import game
@@ -31,6 +30,7 @@ def extractFeatures(team, week, year):
         return {'':None}
 
 def feature_set(year):
+    '''Computes the feature set for 1 year and outputs to FeaturesByYear'''
     DVOA = loadData.getDVOA()
     season_table = loadData.loadYear(year)
     league_data = loadData.getYearData(year)
@@ -60,6 +60,8 @@ def feature_set(year):
              ['home ' + x for x in temp_features['away']] + ['score diff', 'spread', 'roof', 'timeofgame', 'week_year']
     output_file = os.path.expanduser('~') + '/FSA/data/FeaturesByYear/features%d.csv' % year
     np.savetxt(output_file, np.array(outputs), delimiter=',', fmt="%s", header=','.join(header), comments = '')
+    # Below this line, the data is reloaded and new columns are added that are
+    # ratios of other features
     df = pd.read_csv(output_file)
     added_columns = [('3rd_down_conv%', '3rd_down_converted', '3rd_down_attempts'), \
                          ('4th_down_conv%', '4th_down_converted', '4th_down_attempts'), 
@@ -75,6 +77,7 @@ def feature_set(year):
     df.to_csv(os.path.expanduser('~') + '/FSA/data/FeaturesByYear/features%d.csv' %year, index = False)
 
 def divide_features(table, feature_name, feature_numerator, feature_divisor):
+    '''Takes a table and makes a new column that is a ratio of the other two'''
     for elem in ['away ', 'home ', 'away opp_', 'home opp_']:
         table[elem + feature_name] = table[elem + feature_numerator] / table[elem + feature_divisor]
         vals = []
@@ -87,7 +90,8 @@ def divide_features(table, feature_name, feature_numerator, feature_divisor):
     return table
             
 def add_div_features(table, div_list):
-    # div list is a list of tuples
+    '''For a list of tuples, adds in new columns into a table that is the ratio
+    of two existing columns'''
     for elem in div_list:
         table = divide_features(table, elem[0], elem[1], elem[2])
     return table    
