@@ -4,11 +4,12 @@ from models.sk_RF import sk_RF
 from models.sk_GBR import sk_GBR
 from models.sk_SVM import sk_SVM
 
-#from models.h2o_RF import h2o_RF
-#from models.h2o_DL import h2o_DL
+from models.h2o_RF import h2o_RF
+from models.h2o_DL import h2o_DL
 
 import simpleBlend as blender
 import validate as val
+import validateMoneyLine as moneyline
 
 class Ensemble:
     def __init__(self):
@@ -60,9 +61,15 @@ class Ensemble:
         self.blended_results = blender.blend(self.preds)
         return self.blended_results
 
-    def validate(self, actual, spread, test):
-        if test:
-            return val.testError(self.blended_results, actual, spread)
+    def validate(self, actual, spread, test, moneyline):
+        if moneyline: 
+            if test:
+                return moneyline.testError(self.blended_results, actual, spread)
+            else:
+                moneyline.trainError(self.blended_results, actual, spread)
         else:
-            val.trainError(self.blended_results, actual, spread)
+            if test:
+                return val.testError(self.blended_results, actual, spread)
+            else:
+                val.trainError(self.blended_results, actual, spread)            
 
