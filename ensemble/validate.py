@@ -150,6 +150,7 @@ def testError(y_pred, y_test, test_spread):
     print "predicted away\t%d\t%d" % (conf[0], conf[1])
     print "predicted home\t%d\t%d" % (conf[2], conf[3])
     print "###########################"
+    return {'wins' : conf[0] + conf[3], 'losses':conf[1] + conf[2]}
 
 def plotHist(l1, l2, l3):
     l2 = l2.values.T.tolist()[0]

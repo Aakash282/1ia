@@ -2,8 +2,6 @@ import pandas as pd
 import os
 import sys
 from features import features
-# from dataIO import loadData as ld
-# from matplotlib import pyplot as plt
 from features import features
 import argparse
 from dataIO import separate_teams as sep
@@ -21,7 +19,7 @@ if args.all:
     lr.parseYear()
     # Run separate_teams
     print "Separating teams"
-    sep.write_teams_year()
+    sep.write_teams_years()
     # Run features
     execfile(os.path.expanduser('~') + "/FSA/1ia/features/computeTeamFeatures.py")
     print "Computing features"
@@ -47,11 +45,7 @@ inpath = "FeaturesByYear/"
 outpath = "TrainTest/"
 training_set = []
 train_years = range(train_start, train_stop+1)
-'''
-train_years.remove(2006)
-train_years.remove(2007)
-train_years.remove(2008)
-'''
+
 for i in train_years:
 	training_set.append(pd.DataFrame.from_csv(dir_prefix + inpath + "features%d.csv" % i))
 
