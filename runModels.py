@@ -47,14 +47,14 @@ def train(ens, x_train, y_train):
 def test(ens, x_train, y_train, train_spread, x_test, y_test, test_spread):
     # find training error
     plot = False
-    
+    # Currently moneyline is set to false.  Not sure how to set to true
     ens.predict(x_train, train=True)
     a = ens.blend()
-    ens.validate(y_train, train_spread, False)
+    ens.validate(y_train, train_spread, False, False)
     
     ens.predict(x_test, train=False)
     b = ens.blend()
-    c = ens.validate(y_test, test_spread, True)
+    c = ens.validate(y_test, test_spread, True, False)
 
     if plot:
         density = gaussian_kde(a)

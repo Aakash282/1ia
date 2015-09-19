@@ -44,7 +44,34 @@ def parseYear(start, stop):
         columns[0] = 'week year'
         year_data.columns = columns
         year_data.to_csv(data_dir + "NFLstatsbyyear/NFL0114_TeamStats_raw%d.csv" %year)
-        
+    # Begin converting Tennessee Oilers to Titans (for DVOA stat reasons)
+    tables = [getYearData(1997), getYearData(1998)]
+    for table in tables:
+        home_team = []
+        away_team = []
+        spread = []
+        for row in table.iterrows():
+            if 'Oil' in row[1]['home_team']:
+                home_team.append('Tennessee Titans ')
+            else:
+                home_team.append(row[1]['home_team'])
+            if 'Oil' in row[1]['away_team']:
+                away_team.append('Tennessee Titans ')
+            else:
+                away_team.append(row[1]['away_team'])
+            if 'Oil' in row[1]['spread']:
+                number = (row[1]['spread']).split(' ')[-1]
+                spread.append('Tennessee Titans ' + str(number))
+            else:
+                spread.append(row[1]['spread'])
+        table['home_team'] = home_team
+        table['away_team'] = away_team
+        table['spread'] = spread
+
+    tables[0].to_csv(data_dir + "NFLstatsbyyear/NFL0114_TeamStats_raw%d.csv" %1997, index = True)
+    tables[0].to_csv(data_dir + "NFLstatsbyyear/NFL0114_TeamStats_raw%d.csv" %1998, index = True)
+    # end super ghettoooooooo conversion
+    
 def getDataset():
     base_dir = os.path.expanduser('~') + "/FSA/data"
     return pd.DataFrame.from_csv(base_dir + "/NFL0114_TeamStats_raw.csv")
