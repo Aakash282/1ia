@@ -9,7 +9,7 @@ from models.h2o_DL import h2o_DL
 
 import simpleBlend as blender
 import validate as val
-import validateMoneyLine as moneyline
+import validateMoneyLine as money
 
 class Ensemble:
     def __init__(self):
@@ -64,9 +64,9 @@ class Ensemble:
     def validate(self, actual, spread, test, moneyline):
         if moneyline: 
             if test:
-                return moneyline.testError(self.blended_results, actual, spread)
+                return money.testError(self.blended_results, actual, spread)
             else:
-                moneyline.trainError(self.blended_results, actual, spread)
+                money.trainError(self.blended_results, actual, spread)
         else:
             if test:
                 return val.testError(self.blended_results, actual, spread)
