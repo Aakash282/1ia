@@ -2,9 +2,7 @@ import pandas as pd
 import os
 import sys
 from features import features
-# from dataIO import loadData as ld
-# from matplotlib import pyplot as plt
-from features import features
+from features import computeTeamFeatures
 import argparse
 from dataIO import separate_teams as sep
 from dataIO import loadRaw as lr
@@ -21,20 +19,20 @@ if args.all:
     lr.parseYear(1997,2014)
     # Run separate_teams
     print "Separating teams"
-    sep.write_teams_year(1997,2014)
+    sep.write_teams_years(1997,2014)
     # Parse DVOA
     print "Getting DVOA"
     from dataIO import DVOAparse
     # Run features
-    from features import computeTeamFeatures
     print "Computing features"
+    computeTeamFeatures.compute(1997,2014)
     from features import features
     features.get_feature_set(1997, 2014)
 
 elif args.features:
     # Run features
-    from features import computeTeamFeatures
     print "Computing features"
+    computeTeamFeatures.compute(1997,2014)
     from features import features
     features.get_feature_set(1997, 2014)
 
@@ -50,11 +48,7 @@ inpath = "FeaturesByYear/"
 outpath = "TrainTest/"
 training_set = []
 train_years = range(train_start, train_stop+1)
-'''
-train_years.remove(2006)
-train_years.remove(2007)
-train_years.remove(2008)
-'''
+
 for i in train_years:
 	training_set.append(pd.DataFrame.from_csv(dir_prefix + inpath + "features%d.csv" % i))
 

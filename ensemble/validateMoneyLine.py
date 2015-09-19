@@ -22,13 +22,13 @@ def compare(l1, l2, l3):
         err_count = 0
         total = 0
         for i in range(len(l1)):
-            if abs(l1[i] - l3[i]) < eps: continue
+            # if abs(l1[i] - l3[i]) < eps: continue
             if abs(l1[i]) < 1.0: continue
             else: 
                 total += 1
-            if l1[i] < l3[i]: answer = -1
+            if l1[i] < 0: answer = -1
             else: answer = 1
-            if l2[i] < l3[i]: actual = -1
+            if l2[i] < 0: actual = -1
             else: actual = 1
             if answer != actual:
                 err_count += 1
@@ -44,13 +44,14 @@ def falseNegative(l1, l2, l3):
         total = 0
         for i in range(len(l1)):
             
-            if l2[i] > l3[i]: 
-                if abs(l1[i] - l3[i]) < eps: continue
+            if l2[i] > 0: 
+                # if abs(l1[i] - l3[i]) < eps: continue
                 if abs(l1[i]) < 1.0: continue
-                total += 1 
-                if l1[i] < l3[i]: answer = -1
+                else: 
+                    total += 1
+                if l1[i] < 0: answer = -1
                 else: answer = 1
-                if l2[i] < l3[i]: actual = -1
+                if l2[i] < 0: actual = -1
                 else: actual = 1
                 if answer != actual:
                     err_count += 1
@@ -65,13 +66,14 @@ def falsePositive(l1, l2, l3):
         err_count = 0
         total = 0
         for i in range(len(l1)):
-            if l2[i] < l3[i]: 
-                if abs(l1[i] - l3[i]) < eps: continue
+            if l2[i] < 0: 
+                # if abs(l1[i] - l3[i]) < eps: continue
                 if abs(l1[i]) < 1.0: continue
-                total += 1
-                if l1[i] < l3[i]: answer = -1
+                else: 
+                    total += 1
+                if l1[i] < 0: answer = -1
                 else: answer = 1
-                if l2[i] < l3[i]: actual = -1
+                if l2[i] < 0: actual = -1
                 else: actual = 1
                 if answer != actual:
                     err_count += 1
@@ -84,11 +86,10 @@ def confusionMatrix(l1, l2, l3):
     else:
         conf = [0,0,0,0]
         for i in range(len(l1)):
-            if abs(l1[i] - l3[i]) < eps: continue
             if abs(l1[i]) < 1.0: continue
-            if l1[i] < l3[i]: answer = -1
+            if l1[i] < 0: answer = -1
             else: answer = 1
-            if l2[i] < l3[i]: actual = -1
+            if l2[i] < 0: actual = -1
             else: actual = 1
             if actual == 1:
                 if answer > 0.0:
