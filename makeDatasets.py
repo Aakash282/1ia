@@ -6,6 +6,7 @@ from features import computeTeamFeatures
 import argparse
 from dataIO import separate_teams as sep
 from dataIO import loadRaw as lr
+from dataIO import DVOAparse as dvoa
 sys.path.append(os.path.expanduser('~') + '/FSA/1ia/features/' )
 
 parser = argparse.ArgumentParser()
@@ -22,7 +23,7 @@ if args.all:
     sep.write_teams_years(1997,2014)
     # Parse DVOA
     print "Getting DVOA"
-    from dataIO import DVOAparse
+    dvoa.compute(1997,2014)
     # Run features
     print "Computing features"
     computeTeamFeatures.compute(1997,2014)
