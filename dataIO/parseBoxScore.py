@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup, SoupStrainer
 from glob import glob
-import os, csv
+import os, csv, sys
 
 
 def parseGame(game, week):
@@ -8,7 +8,7 @@ def parseGame(game, week):
   with open(game, 'r') as g:
     only_tables = SoupStrainer('table')
     soup = BeautifulSoup(g,parse_only=only_tables)
-
+    print game
     features = [str(week)]
     home = []
     away = []
@@ -17,7 +17,12 @@ def parseGame(game, week):
     gameInfo = soup.find(id="game_info").find_all('td')
     lineScore = soup.find(id="linescore").find_all('td')
     teamStats = soup.find(id="team_stats").find_all('td')
-    officials = soup.find(id="ref_info").find_all('td')
+    try:
+        officials = soup.find(id="ref_info").find_all('td')
+        refs = [officials[x].text for x in range(len(officials))]
+        refs += [''] * (14 - len(refs))
+    except:
+        refs = [''] * 14
     
     # Teams and Records
     if len(lineScore) > 12:
@@ -69,86 +74,93 @@ def parseGame(game, week):
     features.append(attendance)
 
     # Officials
-    refs = [officials[x].text for x in range(len(officials))]
-    refs += [''] * (14 - len(refs))
     features.extend(refs)
 
     # Score
     home.extend(homeScores)
     away.extend(awayScores)
 
-    
-    # First Downs
-    away.append(teamStats[1].text)
-    home.append(teamStats[2].text)
-    
-    # Rushing Stats
-    awayRush = teamStats[4].text
-    homeRush = teamStats[5].text
-    
-    away.extend(awayRush.split('-'))
-    home.extend(homeRush.split('-'))
+    try:
+        # First Downs
+        away.append(teamStats[1].text)
+        home.append(teamStats[2].text)
+        
+        # Rushing Stats
+        awayRush = teamStats[4].text
+        homeRush = teamStats[5].text
+        
+        away.extend(awayRush.split('-'))
+        home.extend(homeRush.split('-'))
 
-    # Passing Stats
-    awayPass = teamStats[7].text
-    homePass = teamStats[8].text
-    away.extend(awayPass.split('-'))
-    home.extend(homePass.split('-'))
+        # Passing Stats
+        awayPass = teamStats[7].text
+        homePass = teamStats[8].text
+        away.extend(awayPass.split('-'))
+        home.extend(homePass.split('-'))
 
-    # Sacked
-    awaySacked = teamStats[10].text
-    homeSacked = teamStats[11].text
-    away.extend(awaySacked.split('-'))
-    home.extend(homeSacked.split('-'))
+        # Sacked
+        awaySacked = teamStats[10].text
+        homeSacked = teamStats[11].text
+        away.extend(awaySacked.split('-'))
+        home.extend(homeSacked.split('-'))
 
-    # Net Pass Yards
-    away.append(teamStats[13].text)
-    home.append(teamStats[14].text)
+        # Net Pass Yards
+        away.append(teamStats[13].text)
+        home.append(teamStats[14].text)
 
-    # Total Yards
-    away.append(teamStats[16].text)
-    home.append(teamStats[17].text)
+        # Total Yards
+        away.append(teamStats[16].text)
+        home.append(teamStats[17].text)
 
-    # Fumbles
-    away.extend(teamStats[19].text.split('-'))
-    home.extend(teamStats[20].text.split('-'))
+        # Fumbles
+        away.extend(teamStats[19].text.split('-'))
+        home.extend(teamStats[20].text.split('-'))
 
-    # Turnovers
-    away.append(teamStats[22].text)
-    home.append(teamStats[23].text)
-    # Penalties
-    away.extend(teamStats[25].text.split('-'))
-    home.extend(teamStats[26].text.split('-'))
+        # Turnovers
+        away.append(teamStats[22].text)
+        home.append(teamStats[23].text)
+        # Penalties
+        away.extend(teamStats[25].text.split('-'))
+        home.extend(teamStats[26].text.split('-'))
 
-    # 3rd Down Eff
-    away.extend(teamStats[28].text.split('-'))
-    home.extend(teamStats[29].text.split('-'))
+        # 3rd Down Eff
+        away.extend(teamStats[28].text.split('-'))
+        home.extend(teamStats[29].text.split('-'))
 
-    # 4th Down Eff
-    away.extend(teamStats[31].text.split('-'))
-    home.extend(teamStats[32].text.split('-'))
+        # 4th Down Eff
+        away.extend(teamStats[31].text.split('-'))
+        home.extend(teamStats[32].text.split('-'))
 
-    # Total Plays
-    away.append(teamStats[34].text)
-    home.append(teamStats[35].text)
-    # TOP
-    away.append(teamStats[37].text)
-    home.append(teamStats[38].text)
-
+        # Total Plays
+        away.append(teamStats[34].text)
+        home.append(teamStats[35].text)
+        # TOP
+        away.append(teamStats[37].text)
+        home.append(teamStats[38].text)
+    except:
+        pass
     # Finish Up
     features.extend(home)
     features.extend(away)
 
     return features
 
+prompt = input('Are you sure you want to remake this? (0 to continue, anything else to exit)')
+if prompt != 0:
+    print "Exiting"
+    sys.exit()
+
+start = input("Start year:")
+stop = input("Stop year:")
+
 home = os.path.expanduser('~') + "/FSA/data/"
-years = [x for x in range(2010, 2011)]
+years = [x for x in range(start, stop)]
 weeks = [x+1 for x in range(17)]
 for y in years:
   with open(home + "rawdata/rawdata" + str(y), 'w') as f:
     for w in weeks:
       print "Year: %d, Week: %d" % (y, w)
-      games = glob(home + 'boxscores' + '/' + str(y) + '/' + str(w) + '/' + '2*.htm')
+      games = glob(home + 'boxscores' + '/' + str(y) + '/' + str(w) + '/' + '[1,2]*.htm')
       for game in games:
         gameData = parseGame(game, w)
         # Write the game data

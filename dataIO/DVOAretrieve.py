@@ -5,7 +5,7 @@ import time
 
 # Might have to get cookies again if the cookie has expired.
 home = os.getcwd()
-for y in range(2001, 2015):
+for y in range(1997, 2001):
     for w in range(1, 18): 
         print "Year: %d, Week: %d" % (y, w)
         #os.makedirs(os.getcwd() + ("/%d/%d/" % (y, w)))

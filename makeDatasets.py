@@ -18,22 +18,25 @@ args = parser.parse_args()
 if args.all:
     # Run loadRaw
     print "Loading rawdata"
-    lr.parseYear()
+    lr.parseYear(1997,2014)
     # Run separate_teams
     print "Separating teams"
-    sep.write_teams_year()
+    sep.write_teams_year(1997,2014)
+    # Parse DVOA
+    print "Getting DVOA"
+    from dataIO import DVOAparse
     # Run features
-    execfile(os.path.expanduser('~') + "/FSA/1ia/features/computeTeamFeatures.py")
+    from features import computeTeamFeatures
     print "Computing features"
     from features import features
-    features.get_feature_set(2001, 2014)
+    features.get_feature_set(1997, 2014)
 
 elif args.features:
     # Run features
-    execfile(os.path.expanduser('~') + "/FSA/1ia/features/computeTeamFeatures.py")
+    from features import computeTeamFeatures
     print "Computing features"
     from features import features
-    features.get_feature_set(2001, 2014)
+    features.get_feature_set(1997, 2014)
 
 
 train_start = input('Enter starting year for training set: ')

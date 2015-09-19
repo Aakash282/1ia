@@ -7,7 +7,7 @@ def findGames(file):
     games = re.findall('/boxscores/[0-9]{9}[a-z]{2,3}\.htm', file)
     return set(games)
 
-years = [x for x in range(2001, 2008)]
+years = range(1990, 2001)
 weeks = [x+1 for x in range(17)]
 home = os.getcwd()
 for y in years:

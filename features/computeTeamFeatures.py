@@ -48,6 +48,8 @@ for year in range(2001, 2015):
 
 
 		featuresdir = os.path.expanduser('~') + "/FSA/data/teamfeaturesbyyear/features%d/" % year
+		if not os.path.exists(featuresdir):
+			os.makedirs(featuresdir)
 		with open(featuresdir + t + '.csv', 'w') as g:
 			g.write(','.join(['week'] + headers + DVOAheaders + computedHeaders) + '\n')
 			for game in features:

@@ -9,8 +9,8 @@ def separate_teams(table):
     team_dict = TFns.get_teams(table)
     return team_dict
 
-def write_teams_year():
-    for i in range(2001, 2015):
+def write_teams_year(start, stop):
+    for i in range(start, stop+1):
         print i
         table = load.getYearData(i)
         teams_table = separate_teams(table)
@@ -27,6 +27,8 @@ def write_teams_year():
             away_team['home_field?'] = no_ser 
             table_out = pd.merge(home_team, away_team, how = 'outer')
             dirpath =  os.path.expanduser('~') + '/FSA/data/teamdatabyyear/teamdata%d/' %i
+            if not os.path.exists(dirpath):
+                os.makedirs(dirpath)
             table_out = table_out.sort('week year')
             table_out.to_csv(dirpath + team + '.csv')
             
