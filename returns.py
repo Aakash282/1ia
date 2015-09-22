@@ -21,7 +21,7 @@ def returnsFromData(results, bet_percent, cons):
             (win_lst[-1] + loss_lst[-1])
     return bet
 
-def Percent(p, bet_percent, years, cons, output):
+def Percent(p, bet_percent, years, cons, output, simulations):
     ''' This is a simulation of what our returns would look like if we bet on all
     games each week, we bet evenly on all games, our returns are independent, and 
     we follow a strategy such that we bet a percent of our total investment each 
@@ -32,7 +32,6 @@ def Percent(p, bet_percent, years, cons, output):
     # bet_percent = amount of money to bet each week as a percent of total.  
     # number of simulations 
     # cons is a boolean that states if the betting percent is constant
-    simulations = 1000
     payoff = []
     final_payoff = np.array([])
     count = 0
@@ -122,13 +121,14 @@ def futureReturns(wins, losses, bet_percent, cons):
     no change in week-week p.  This should be the function to use for simulating
     returns.  I believe we should set cons to false.'''
     # Generates p vals according to the MLE pdf
-    pvals = randP(wins, losses, 100)
+    pvals = randP(wins, losses, 10000)
     returns = []
     # for each of the random p vals generated, we run a simulation
     for elem in pvals:
-        returns.append(Percent(elem, bet_percent, 1, cons, False))
+        returns.append(Percent(elem, bet_percent, 1, cons, False, 10))
     # flatten the list of lists to a single list
     returns = [item for sublist in returns for item in sublist]
+    returns.sort()
     return returns
 
 
