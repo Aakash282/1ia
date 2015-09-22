@@ -43,11 +43,46 @@ class team:
 		record_vs_spread = np.array(computeRecordVsSpread(season, n))
 		avg_closing_ability = np.array(computeClosingAbilityStats(season, n))
 		comeback_record = np.array(computeComebackRecord(season, n))
+		avg_plays_per_turnover = np.array(computePlaysPerTurnover(season, n))
 		
 		complexFeatures = np.vstack((record_vs_spread, avg_closing_ability))
 		complexFeatures = np.vstack((complexFeatures, comeback_record))
+		complexFeatures = np.vstack((complexFeatures, avg_plays_per_turnover))
 
 		return complexFeatures
+
+# This function computes the average number of plays between turnovers
+def computePlaysPerTurnover(season, n):
+	plays_and_turnovers = np.empty(len(season)).tolist()
+	avg_plays_per_turnover = np.empty(season.shape[0]-(n-1))
+
+	# Bonus term for turnoverless game
+	no_turnover_bonus = 4.0 / 3.0
+
+	# Create list of tuples (plays, turnovers)
+	for i,game in enumerate(season.tolist()):
+		plays = float(game[6])
+		turnovers = float(game[7])
+		plays_and_turnovers[i] = (plays, turnovers)
+
+	# Compute moving average
+	for i in range(season.shape[0]-(n-1)):
+		window = plays_and_turnovers[i:i+n]
+
+		# Compute moving sum
+		sum_total_plays = sum([pair[0] for pair in window])
+		sum_turnovers = sum([pair[1] for pair in window])
+
+		# If there were turnovers, compute average
+		if sum_turnovers > 0:
+			avg_plays_per_turnover[i] = sum_total_plays / sum_turnovers
+
+		# If there were no turnovers over the 3 game span, multiply by bonus
+		else:
+			avg_plays_per_turnover[i] = sum_total_plays * no_turnover_bonus
+
+	return avg_plays_per_turnover
+
 
 # This function computes a team's ability to close out a game
 def computeClosingAbilityStats(season, n):
