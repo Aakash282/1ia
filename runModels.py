@@ -10,13 +10,20 @@ import pandas as pd
 import os
 import returns
 
-def importData(training=1):
+def importData(training=1, synth=False):
     # Change the data dir if pulling from the normal set
-    datadir = os.getcwd().strip('1ia') + 'data/TrainTest/'
-    if training:
-        return pd.DataFrame.from_csv(datadir + 'training_set.csv')
-    else:
-        return pd.DataFrame.from_csv(datadir + 'testing_set.csv')
+    if synth: 
+        datadir = os.getcwd().strip('1ia') + 'data/TrainTestSynth/'
+        if training:
+            return pd.DataFrame.from_csv(datadir + 'training_set.csv')
+        else:
+            return pd.DataFrame.from_csv(datadir + 'testing_set.csv')
+    else: 
+        datadir = os.getcwd().strip('1ia') + 'data/TrainTest/'
+        if training:
+            return pd.DataFrame.from_csv(datadir + 'training_set.csv')
+        else:
+            return pd.DataFrame.from_csv(datadir + 'testing_set.csv')
 
 
 def create_ensemble():
@@ -24,13 +31,13 @@ def create_ensemble():
     ens = Ensemble()
 
     # add a SK Random Forests
-    ens.addSKRF([2])
+    # ens.addSKRF([1])
 
     # add a SK Gradient Boosted Machine
-    #ens.addSKGBR([150, .07])
+    # ens.addSKGBR([300, .01])
 
     # add a SK SVM
-    #ens.addSKSVM([])
+    ens.addSKSVM([])
 
     # add an h2o RF
     #ens.addh2oRF([True, files, 100, 150, 2])
@@ -44,17 +51,17 @@ def train(ens, x_train, y_train):
     # train all models
     ens.train(x_train, y_train)
 
-def test(ens, x_train, y_train, train_spread, x_test, y_test, test_spread):
+def test(ens, x_train, y_train, train_spread, x_test, y_test, test_spread, moneyline):
     # find training error
     plot = False
     # Currently moneyline is set to false.  Not sure how to set to true
     ens.predict(x_train, train=True)
     a = ens.blend()
-    ens.validate(y_train, train_spread, False, False)
+    ens.validate(y_train, train_spread, False, moneyline)
     
     ens.predict(x_test, train=False)
     b = ens.blend()
-    c = ens.validate(y_test, test_spread, True, False)
+    c = ens.validate(y_test, test_spread, True, moneyline)
 
     if plot:
         density = gaussian_kde(a)
@@ -71,14 +78,31 @@ def test(ens, x_train, y_train, train_spread, x_test, y_test, test_spread):
     return c    
     
 if __name__ == "__main__":
-    df_train = importData()
-    df_test = importData(0)
-
     files = ('TrainTestSynth/training_set.csv', 'TrainTestSynth/val_set.csv', 'TrainTestSynth/testing_set.csv')
     ######################
     # TRAIN ON SPREAD????#
     ######################
     spread = False
+
+    ######################
+    # TRAIN ON SYNTH???? #
+    ######################
+    synth = True
+
+    ######################
+    # MONEYLINE????      #
+    ######################
+    moneyline = False
+
+    ######################
+    # BETTING WEEKS????  #
+    ######################
+    weeks = range(6,17)
+
+
+
+    df_train = importData(True, synth)
+    df_test = importData(False, synth)
 
     holdout = ['score diff', 'home score', 'away score']
     if not spread:
@@ -100,13 +124,14 @@ if __name__ == "__main__":
     results = []
     for week in set(df_train['week_year']):
         print 'week', week
+        if week not in weeks: continue
         #plt.figure('week %d' %week)
         #plt.title(week)
         train_idx = X_train['week_year'] == week
         test_idx = X_test['week_year'] == week
         results.append(
             test(ens, X_train[train_idx], Y_train[train_idx], train_spread[train_idx],
-                  X_test[test_idx], Y_test[test_idx], test_spread[test_idx]))
+                  X_test[test_idx], Y_test[test_idx], test_spread[test_idx], moneyline))
         
         #plt.legend(["actual", "predicted"])
     #plt.show()
