@@ -23,19 +23,19 @@ class h2o_RF(Model):
 		self.valData = h2o.import_file(path=valFile)
 		self.testData = h2o.import_file(path=testingFile)
 
-		# print self.trainData.col_names()
+		#print self.trainData.col_names
 		# drop the invalid columns
-		#self.trainData = self.trainData.drop("away score").drop("home score")
-		#self.valData = self.valData.drop("away score").drop("home score")
-		#self.testData = self.testData.drop("away score").drop("home score")
+		self.trainData = self.trainData.drop("away_score").drop("home_score")
+		self.valData = self.valData.drop("away_score").drop("home_score")
+		self.testData = self.testData.drop("away_score").drop("home_score")
 
 		self.params = params
 
-		# if self.params[0] == False:
-		# 	self.trainData = self.trainData.drop('spread')
-		# 	# self.valData   = self.valData.drop('spread')
-		# 	self.valData = self.trainData
-		# 	self.testData  = self.testData.drop('spread')
+		if self.params[0] == False:
+			self.trainData = self.trainData.drop('spread')
+			# self.valData   = self.valData.drop('spread')
+			self.valData = self.trainData
+			self.testData  = self.testData.drop('spread')
 
 		# for h2o, creating the model is the same as training the model so
 		# need to hold of here
