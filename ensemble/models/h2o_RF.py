@@ -1,5 +1,5 @@
 # h2o_RF.py
-# this file is a handle for 
+# this file is a handle for
 import os
 import h2o
 import pandas as pd
@@ -19,25 +19,25 @@ class h2o_RF(Model):
 		testingFile = datadir + params[1][2]
 
 
-		self.trainData = h2o.import_frame(path=trainingFile)
-		self.valData = h2o.import_frame(path=valFile)
-		self.testData = h2o.import_frame(path=testingFile)
+		self.trainData = h2o.import_file(path=trainingFile)
+		self.valData = h2o.import_file(path=valFile)
+		self.testData = h2o.import_file(path=testingFile)
 
 		# print self.trainData.col_names()
 		# drop the invalid columns
-		self.trainData = self.trainData.drop("away score").drop("home score")
-		self.valData = self.valData.drop("away score").drop("home score")
-		self.testData = self.testData.drop("away score").drop("home score")
+		#self.trainData = self.trainData.drop("away score").drop("home score")
+		#self.valData = self.valData.drop("away score").drop("home score")
+		#self.testData = self.testData.drop("away score").drop("home score")
 
 		self.params = params
 
-		if self.params[0] == False: 
-			self.trainData = self.trainData.drop('spread')
-			# self.valData   = self.valData.drop('spread')
-			self.valData = self.trainData
-			self.testData  = self.testData.drop('spread')
+		# if self.params[0] == False:
+		# 	self.trainData = self.trainData.drop('spread')
+		# 	# self.valData   = self.valData.drop('spread')
+		# 	self.valData = self.trainData
+		# 	self.testData  = self.testData.drop('spread')
 
-		# for h2o, creating the model is the same as training the model so 
+		# for h2o, creating the model is the same as training the model so
 		# need to hold of here
 		self.model = None
 
@@ -52,7 +52,7 @@ class h2o_RF(Model):
 
 	def predict(self, x, train):
 		# check if the input data is training or testing
-		if train: 
+		if train:
 			return self.model.predict(self.trainData).as_data_frame(use_pandas=True).values.T.tolist()[0]
 		else:
 			return self.model.predict(self.testData).as_data_frame(use_pandas=True).values.T.tolist()[0]
